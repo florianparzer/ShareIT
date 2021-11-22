@@ -25,4 +25,4 @@
 
 ## Overkill
 
-- [ ] Versschlüsselung der Kommunikation zum Server
+- [ ] Verschlüsselung der Kommunikation zum Server
