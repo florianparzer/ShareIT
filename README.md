@@ -1,12 +1,12 @@
 # Filesharing Server
 
--Abdou Arsani (ic20bxxx@technikum-wien.at)
--Parzer Florian (ic20b081@technikum-wien.at)
+- Abdou Arsani (ic20bxxx@technikum-wien.at)
+- Parzer Florian (ic20b081@technikum-wien.at)
 
-##Must-Have Features
+## Must-Have Features
 
-##Should-Have Features
+## Should-Have Features
 
-##Nice-to-have Features
+## Nice-to-have Features
 
-##Overkill
+## Overkill
