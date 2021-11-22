@@ -6,6 +6,7 @@
 ## Must-Have Features
 
 - [ ] JavaFX Client als GUI
+- [ ] Basic Konfiguration mittels Config-File
 - [ ] File upload/download
 - [ ] Löschen von Dateien
 - [ ] Dateien umbenennen
