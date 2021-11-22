@@ -5,7 +5,7 @@
 
 ## Must-Have Features
 
-- JavaFX Client als GUI
+- [ ] JavaFX Client als GUI
 - File upload/download
 - Löschen von Dateien
 - Dateien umbenennen
