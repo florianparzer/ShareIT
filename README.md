@@ -7,7 +7,7 @@
 
 - [ ] JavaFX Client als GUI (Arsani)
 - [x] Basic Konfiguration mittels Config-File (Florian)
-- [ ] File upload/download (Florian)
+- [x] File upload/download (Florian)
 - [ ] Löschen von Dateien (Arsani)
 - [ ] Dateien umbenennen (Arsani)
 - [ ] Anzeigen der Files mittels Ordnerstruktur (Florian/Arsani)
