@@ -11,6 +11,12 @@ public class TCP_Server {
     private String configRoot;
     private String documentRoot;
 
+    /**
+     * Generates a new TCP_Server Object. In order to do that it reads parameters from a config-file
+     * The config-file is found in the configRoot
+     * @param configRoot The path of the directory where the config-file is found
+     * @throws IOException if the file cannot be opened a IOException is thrown
+     */
     public TCP_Server(String configRoot) throws IOException{
         this.configRoot = configRoot;
         connections = new LinkedHashSet<ClientConnection>();
@@ -21,7 +27,7 @@ public class TCP_Server {
         Pattern docPattern = Pattern.compile("(?:documentRoot:)\\s*([A-Za-z0-9/\\.\\-_\\?]+)\\s*");
         String line;
         try(BufferedReader in = new BufferedReader(new FileReader(configRoot+ "server.conf"))) {
-        //try(BufferedReader in = new BufferedReader(new FileReader("configRoot/server.conf"))) {
+            //try(BufferedReader in = new BufferedReader(new FileReader("configRoot/server.conf"))) {
             Matcher matcher;
             while((line = in.readLine()) != null){
                 matcher = commentPattern.matcher(line);
@@ -52,23 +58,35 @@ public class TCP_Server {
         }
     }
 
-    public void addClient(Socket client) throws IOException{
+    /**
+     * Adds a new client to the set of clients, it also generates and starts the listening thread for the Client Connection
+     * @param client is the Socket for the Client Connection
+     * @throws IOException
+     */
+    public void addClient(Socket client){
         ClientConnection clientConnection = new ClientConnection(client, this);
+        connections.add(clientConnection);
+        clientConnection.start();
+        //clientConnection.downloadFile("src/main/resources/configRoot/server.conf");
+        //clientConnection.downloadFile("src/main/resources/configRoot/test.txt");
+        //clientConnection.uploadFile("src/main/resources/server.conf");
     }
 
 
     public void listenConnection(){
-        try {
-            while (true) {
-                System.out.println("Waiting for Connection");
+        while (true) {
+            //Endless loop to accept incoming client connections
+            System.out.println("Waiting for Connection");
+            try{
                 Socket client = localTcpServer.accept();
                 System.out.println("Server: connected to Client " + client.getInetAddress());
                 this.addClient(client);
+            }catch (IOException e){
+                e.printStackTrace();
             }
-        }catch (IOException e){
-            e.printStackTrace();
         }
     }
+
 
     public void close() throws IOException{
         localTcpServer.close();

@@ -17,7 +17,7 @@ public class ClientGui extends Application {
         BorderPane pane = new BorderPane();
         Scene scene = new Scene(pane, 300, 275);
         primaryStage.setScene(scene);
-        TCP_Client client = new TCP_Client(1234);
+        TCP_Client client = new TCP_Client("127.0.0.1", 1234);
 
         TextArea input = new TextArea();
         pane.setCenter(input);
