@@ -11,7 +11,7 @@
 - [ ] Löschen von Dateien (Arsani)
 - [ ] Dateien umbenennen (Arsani)
 - [ ] Anzeigen der Files mittels Ordnerstruktur (Florian/Arsani)
-- [ ] Zugriff gleichzeitig über mehrere Clients möglich (Florian)
+- [x] Zugriff gleichzeitig über mehrere Clients möglich (Florian)
 
 ## Should-Have Features
 
