@@ -21,7 +21,6 @@ import java.io.IOException;
 
 public class Main extends Application{
 
-
     @Override
     public void start(Stage primaryStage){
         primaryStage.setTitle("Share_IT");
@@ -60,14 +59,10 @@ public class Main extends Application{
         Scene loginScene = new Scene(vbox, 300, 300);
         primaryStage.setScene(loginScene);
         primaryStage.show();
-
-
+        //TODO Arsani ClientGui.startFilesharing(primaryStage);
     }
 
     public static void main(String[] args) {
         launch(args);
-
-
-
     }
 }

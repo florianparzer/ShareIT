@@ -18,7 +18,7 @@ import java.io.File;
 public class ClientGui {
 
 
-    public void startFilesharing(Stage primaryStage){
+    public static void startFilesharing(Stage primaryStage){
         primaryStage.setTitle("FileSharing");
         primaryStage.centerOnScreen();
         primaryStage.setMinHeight(600);
@@ -133,9 +133,4 @@ public class ClientGui {
         primaryStage.show();
 
     }
-
-
-
-
-
 }

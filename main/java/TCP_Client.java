@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 public class TCP_Client {
     private Socket serverSocket;
+    private int commandLen = 100;
 
     public TCP_Client(String ip, int port) throws IOException {
         this.serverSocket = new Socket(ip, port);
@@ -12,6 +13,7 @@ public class TCP_Client {
     }
     //TODO Arsani
     /*
+    //>>>"rename <oldPath> <newPath>"
     public int rename(String path, String newPath){
         try {
             serverSocket.getOutputStream().write("");

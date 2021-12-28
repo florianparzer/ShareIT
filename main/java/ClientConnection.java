@@ -7,6 +7,7 @@ public class ClientConnection implements Runnable{
     private Socket clientSocket;
     private TCP_Server handler;
     private Thread connectionThread;
+    private int commandLen = 100;
 
     public ClientConnection(Socket clientSocket, TCP_Server handler) {
         this.clientSocket = clientSocket;
@@ -17,7 +18,7 @@ public class ClientConnection implements Runnable{
     @Override
     public void run() {
         try {
-            byte[] command = new byte[100];
+            byte[] command = new byte[commandLen];
             String commandText;
             OutputStream out = clientSocket.getOutputStream();
             InputStream in = clientSocket.getInputStream();
@@ -33,7 +34,7 @@ public class ClientConnection implements Runnable{
                         uploadFile(handler.getDocumentRoot() + commandText.split(" ")[1]);
                     }catch (IndexOutOfBoundsException e){
                         e.printStackTrace();
-                        out.write("error".getBytes());
+                        out.write("nack".getBytes());
                     }
                 }else if(commandText.startsWith("download")){
                     //Download Command
@@ -41,10 +42,14 @@ public class ClientConnection implements Runnable{
                         downloadFile(handler.getDocumentRoot() + commandText.split(" ")[1]);
                     }catch (IndexOutOfBoundsException e){
                         e.printStackTrace();
-                        out.write("error".getBytes());
+                        out.write("nack".getBytes());
                     }
                 }else if(commandText.startsWith("rename")){
                     //Rename Command
+                    //>>>rename <oldPath> <newPatch>
+                    //<<<ack
+                    //<<<nack
+                    commandText.split(" ");
 
                 }else if(commandText.startsWith("ls")){
                     //List Command
