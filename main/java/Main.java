@@ -24,7 +24,6 @@ public class Main extends Application{
 
     @Override
     public void start(Stage primaryStage){
-/*
         primaryStage.setTitle("Share_IT");
         primaryStage.centerOnScreen();
         primaryStage.setMinHeight(300);
@@ -39,12 +38,11 @@ public class Main extends Application{
         Button connectButton = new Button("Connect");
         connectButton.setPrefWidth(120);
 
-*/
-/*        logoview.setX(50);
+        logoview.setX(50);
         logoview.setY(25);
         logoview.setFitHeight(100);
         logoview.setFitWidth(100);
-        logoview.setPreserveRatio(true);*//*
+        logoview.setPreserveRatio(true);
 
 
         VBox vbox = new VBox();
@@ -62,7 +60,6 @@ public class Main extends Application{
         Scene loginScene = new Scene(vbox, 300, 300);
         primaryStage.setScene(loginScene);
         primaryStage.show();
-*/
 
 
     }
