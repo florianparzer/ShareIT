@@ -14,6 +14,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.*;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
@@ -28,7 +29,7 @@ public class Main extends Application{
         primaryStage.setMinHeight(300);
         primaryStage.setMinWidth(300);
 
-        Image image = new Image(getClass().getResourceAsStream("src/main/resources/logo.png"));
+        Image image = new Image(new File("src/main/resources/logo.png").toURI().toString());
         ImageView logoview = new ImageView(image);
 
         TextField ipAndPortTextfield = new TextField();

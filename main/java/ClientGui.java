@@ -50,7 +50,7 @@ public class ClientGui {
         Button selectFolderDown = new Button();
         Button [] buttons = {selectFileUp, selectFolderUp, selectFileDown, selectFolderDown};
 
-        Image image = new Image(getClass().getResourceAsStream("src/main/resources/f.png"));
+        Image image = new Image(new File("src/main/resources/f.png").toURI().toString());
         ImageView view1 = new ImageView(image);
         ImageView view2 = new ImageView(image);
         ImageView view3 = new ImageView(image);
