@@ -1,4 +1,3 @@
-package sample;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -29,7 +28,7 @@ public class Main extends Application{
         primaryStage.setMinHeight(300);
         primaryStage.setMinWidth(300);
 
-        Image image = new Image(getClass().getResourceAsStream("logo.png"));
+        Image image = new Image(getClass().getResourceAsStream("src/main/resources/logo.png"));
         ImageView logoview = new ImageView(image);
 
         TextField ipAndPortTextfield = new TextField();

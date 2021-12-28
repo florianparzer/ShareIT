@@ -10,6 +10,18 @@ public class TCP_Client {
         this.serverSocket = new Socket(ip, port);
         System.out.println("Client: connected to " + serverSocket.getInetAddress());
     }
+    //TODO Arsani
+    /*
+    public int rename(String path, String newPath){
+        try {
+            serverSocket.getOutputStream().write("");
+        }catch (IOException e){
+            e.printStackTrace();
+            return -1;
+        }
+        return 0;
+    }
+    */
 
     public int uploadFile(String path){
         int totalSentBytes = 0;
@@ -72,15 +84,5 @@ public class TCP_Client {
 
     public void close() throws IOException{
         serverSocket.close();
-    }
-
-    public static void main(String[] args) throws IOException{
-        //Test main
-        TCP_Client client = new TCP_Client("127.0.0.1", 1243);
-        client.uploadFile("src/main/resources/configRoot/server.conf");
-        client.downloadFile("src/main/resources/server.conf.cp");
-        //client.downloadFile("src/main/resources/test.txt");
-
-        client.close();
     }
 }

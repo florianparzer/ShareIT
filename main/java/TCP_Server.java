@@ -67,12 +67,19 @@ public class TCP_Server {
         ClientConnection clientConnection = new ClientConnection(client, this);
         connections.add(clientConnection);
         clientConnection.start();
-        //clientConnection.downloadFile("src/main/resources/configRoot/server.conf");
-        //clientConnection.downloadFile("src/main/resources/configRoot/test.txt");
-        //clientConnection.uploadFile("src/main/resources/server.conf");
     }
 
+    public void removeClient(ClientConnection clientConnection){
+        connections.remove(clientConnection);
+    }
 
+    public String getDocumentRoot() {
+        return documentRoot;
+    }
+
+    /**
+     *Listens for new TCP Connections and creates and starts new ClientConnections
+     */
     public void listenConnection(){
         while (true) {
             //Endless loop to accept incoming client connections

@@ -1,6 +1,3 @@
-package sample;
-
-import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -53,7 +50,7 @@ public class ClientGui {
         Button selectFolderDown = new Button();
         Button [] buttons = {selectFileUp, selectFolderUp, selectFileDown, selectFolderDown};
 
-        Image image = new Image(getClass().getResourceAsStream("f.png"));
+        Image image = new Image(getClass().getResourceAsStream("src/main/resources/f.png"));
         ImageView view1 = new ImageView(image);
         ImageView view2 = new ImageView(image);
         ImageView view3 = new ImageView(image);

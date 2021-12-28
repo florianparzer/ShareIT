@@ -17,16 +17,41 @@ public class ClientConnection implements Runnable{
     @Override
     public void run() {
         try {
-            uploadFile("src/main/resources/server.conf");
-            System.out.println("sleep1");
-            Thread.sleep(20000);
-            System.out.println("sleep1 fin");
-            downloadFile("src/main/resources/configRoot/server.conf");
-            System.out.println("sleep1");
-            Thread.sleep(20000);
-            System.out.println("sleep1 fin");
-            clientSocket.close();
-        }catch (IOException | InterruptedException e){
+            byte[] command = new byte[100];
+            String commandText;
+            OutputStream out = clientSocket.getOutputStream();
+            InputStream in = clientSocket.getInputStream();
+            while (true){
+                in.read(command);
+                commandText = new String(command);
+                if(commandText.equals("closeConnection")){
+                    closeConnection();
+                    break;
+                }else if(commandText.startsWith("upload")){
+                    //Upload Command
+                    try {
+                        uploadFile(handler.getDocumentRoot() + commandText.split(" ")[1]);
+                    }catch (IndexOutOfBoundsException e){
+                        e.printStackTrace();
+                        out.write("error".getBytes());
+                    }
+                }else if(commandText.startsWith("download")){
+                    //Download Command
+                    try {
+                        downloadFile(handler.getDocumentRoot() + commandText.split(" ")[1]);
+                    }catch (IndexOutOfBoundsException e){
+                        e.printStackTrace();
+                        out.write("error".getBytes());
+                    }
+                }else if(commandText.startsWith("rename")){
+                    //Rename Command
+
+                }else if(commandText.startsWith("ls")){
+                    //List Command
+                }
+                //TODO other Options
+            }
+        }catch (IOException e){
             e.printStackTrace();
         }
     }
@@ -36,6 +61,18 @@ public class ClientConnection implements Runnable{
      */
     public void start(){
         connectionThread.start();
+    }
+
+    /**
+     * Closes the TCP Connection to the Client
+     */
+    public void closeConnection(){
+        try {
+            handler.removeClient(this);
+            clientSocket.close();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     /**
