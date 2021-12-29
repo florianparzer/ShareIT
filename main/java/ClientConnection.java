@@ -1,7 +1,10 @@
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.TreeSet;
 
 public class ClientConnection implements Runnable{
     private Socket clientSocket;
@@ -24,26 +27,16 @@ public class ClientConnection implements Runnable{
             InputStream in = clientSocket.getInputStream();
             while (true){
                 in.read(command);
-                commandText = new String(command);
+                commandText = new String(command).trim();
                 if(commandText.equals("closeConnection")){
                     closeConnection();
                     break;
                 }else if(commandText.startsWith("upload")){
                     //Upload Command
-                    try {
-                        uploadFile(handler.getDocumentRoot() + commandText.split(" ")[1]);
-                    }catch (IndexOutOfBoundsException e){
-                        e.printStackTrace();
-                        out.write("nack".getBytes());
-                    }
+                    uploadFile(handler.getDocumentRoot() + commandText.split(" ")[1]);
                 }else if(commandText.startsWith("download")){
                     //Download Command
-                    try {
-                        downloadFile(handler.getDocumentRoot() + commandText.split(" ")[1]);
-                    }catch (IndexOutOfBoundsException e){
-                        e.printStackTrace();
-                        out.write("nack".getBytes());
-                    }
+                    downloadFile(handler.getDocumentRoot() + commandText.split(" ")[1]);
                 }else if(commandText.startsWith("rename")){
                     //Rename Command
                     //>>>rename <oldPath> <newPatch>
@@ -53,6 +46,14 @@ public class ClientConnection implements Runnable{
 
                 }else if(commandText.startsWith("ls")){
                     //List Command
+                    try {
+                        String content =listContent(handler.getDocumentRoot() + commandText.split(" ")[1]);
+                        out.write("100".getBytes(StandardCharsets.UTF_8));
+                        out.write(content.getBytes(StandardCharsets.UTF_8));
+                    }catch (IndexOutOfBoundsException|NullPointerException e){
+                        e.printStackTrace();
+                        out.write("500".getBytes(StandardCharsets.UTF_8));
+                    }
                 }
                 //TODO other Options
             }
@@ -92,9 +93,12 @@ public class ClientConnection implements Runnable{
                 BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(new File(path)))
         ) {
             InputStream in = clientSocket.getInputStream();
+            OutputStream tcpOut = clientSocket.getOutputStream();
             byte[] inByte = new byte[4096];
             int readBytes = 0;
 
+            //Code 200 = OK
+            tcpOut.write("200".getBytes(StandardCharsets.UTF_8));
             //Read from InputStream
             while ((readBytes = in.read(inByte)) != -1) {
                 if (readBytes != 4096) {
@@ -109,6 +113,16 @@ public class ClientConnection implements Runnable{
                 totalReadBytes += readBytes;
                 inByte = new byte[4096];
             }
+        }catch (FileNotFoundException e){
+            //Send 500 when File not found
+            e.printStackTrace();
+            try {
+                OutputStream tcpOut = clientSocket.getOutputStream();
+                tcpOut.write("500".getBytes(StandardCharsets.UTF_8));
+            }catch (IOException d){
+                d.printStackTrace();
+            }
+            return -1;
         }catch (IOException e){
             e.printStackTrace();
             return -1;
@@ -130,6 +144,8 @@ public class ClientConnection implements Runnable{
             OutputStream out = clientSocket.getOutputStream();
             byte [] outBytes = new byte[4096];
             int sentBytes = 0;
+
+            out.write("100".getBytes(StandardCharsets.UTF_8));
             while ((sentBytes = in.read(outBytes)) != -1){
                 if(sentBytes != 4096){
                     outBytes = Arrays.copyOfRange(outBytes, 0, sentBytes);
@@ -138,12 +154,44 @@ public class ClientConnection implements Runnable{
                 totalSentBytes += sentBytes;
                 outBytes = new byte[4096];
             }
+        }catch (FileNotFoundException e){
+            //Send 500 when File not found
+            e.printStackTrace();
+            try {
+                OutputStream tcpOut = clientSocket.getOutputStream();
+                tcpOut.write("500".getBytes(StandardCharsets.UTF_8));
+            }catch (IOException d){
+                d.printStackTrace();
+            }
+            return -1;
         }catch (IOException e){
             e.printStackTrace();
             return -1;
         }
         System.out.println("Finished download");
         return totalSentBytes;
+    }
+
+    /**
+     * Lists all Directories and Files in the directory and formats them as String
+     * @param path the Path of the Directory to list its contents
+     * @return a formatted String of the Content
+     */
+    public String listContent(String path){
+        String result = "";
+        File dir = new File(path);
+        TreeSet <String> content = new TreeSet<>();
+        File tmp;
+        for(String name: dir.list()){
+            tmp = new File(dir,name);
+            if(tmp.isDirectory()){
+                content.add("d:"+name+" ");
+            }else{
+                content.add("f:" + name + " ");
+            }
+        }
+        result = content.stream().reduce("",String::concat);
+        return result.substring(0, result.length()-1)+";";
     }
 
     @Override
