@@ -38,17 +38,12 @@ public class ClientConnection implements Runnable{
                     //Download Command
                     downloadFile(handler.getDocumentRoot() + commandText.split(" ")[1]);
                 }else if(commandText.startsWith("rename")){
-                    //Rename Command
-                    //>>>rename <oldPath> <newPatch>
-                    //<<<ack
-                    //<<<nack
                     commandText.split(" ");
-
                 }else if(commandText.startsWith("ls")){
                     //List Command
                     try {
                         String content =listContent(handler.getDocumentRoot() + commandText.split(" ")[1]);
-                        out.write("100".getBytes(StandardCharsets.UTF_8));
+                        out.write("200".getBytes(StandardCharsets.UTF_8));
                         out.write(content.getBytes(StandardCharsets.UTF_8));
                     }catch (IndexOutOfBoundsException|NullPointerException e){
                         e.printStackTrace();
@@ -145,7 +140,7 @@ public class ClientConnection implements Runnable{
             byte [] outBytes = new byte[4096];
             int sentBytes = 0;
 
-            out.write("100".getBytes(StandardCharsets.UTF_8));
+            out.write("200".getBytes(StandardCharsets.UTF_8));
             while ((sentBytes = in.read(outBytes)) != -1){
                 if(sentBytes != 4096){
                     outBytes = Arrays.copyOfRange(outBytes, 0, sentBytes);
