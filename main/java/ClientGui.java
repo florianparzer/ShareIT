@@ -12,14 +12,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.*;
-
 import java.io.File;
 
 public class ClientGui {
 
 
     public static void startFilesharing(Stage primaryStage){
-        primaryStage.setTitle("FileSharing");
+        primaryStage.setTitle("Share_IT");
         primaryStage.centerOnScreen();
         primaryStage.setMinHeight(600);
         primaryStage.setMinWidth(650);
@@ -123,10 +122,21 @@ public class ClientGui {
             }
         };
 
+        EventHandler<ActionEvent> disconnectFromServer = new EventHandler<>() {
+            @Override
+            public void handle(ActionEvent event) {
+                primaryStage.close();
+            }
+        };
+
+
+
         selectFileUp.setOnAction(popFileWindow);
         selectFolderUp.setOnAction(popFolderWindow);
         selectFileDown.setOnAction(popFileWindow);
         selectFolderDown.setOnAction(popFolderWindow);
+        btn_disconnect.setOnAction(disconnectFromServer);
+
 
         Scene guiScene = new Scene(vbox, 500, 600);
         primaryStage.setScene(guiScene);
