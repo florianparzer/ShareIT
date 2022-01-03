@@ -21,6 +21,7 @@ import java.io.IOException;
 
 public class Main extends Application{
 
+
     @Override
     public void start(Stage primaryStage){
         primaryStage.setTitle("Share_IT");
@@ -28,7 +29,7 @@ public class Main extends Application{
         primaryStage.setMinHeight(300);
         primaryStage.setMinWidth(300);
 
-        Image image = new Image(new File("src/main/resources/logo.png").toURI().toString());
+        Image image = new Image(new File("src/main/logo.png").toURI().toString());
         ImageView logoview = new ImageView(image);
 
         TextField ipAndPortTextfield = new TextField();
@@ -42,7 +43,6 @@ public class Main extends Application{
         logoview.setFitHeight(100);
         logoview.setFitWidth(100);
         logoview.setPreserveRatio(true);
-
 
         VBox vbox = new VBox();
         vbox.setAlignment(Pos.CENTER);
@@ -59,10 +59,29 @@ public class Main extends Application{
         Scene loginScene = new Scene(vbox, 300, 300);
         primaryStage.setScene(loginScene);
         primaryStage.show();
-        //TODO Arsani ClientGui.startFilesharing(primaryStage);
+
+        EventHandler<ActionEvent> connectToServer = new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if(true/*Wenn die IP, Port und Username stimmen*/){
+                    ClientGui.startFilesharing(primaryStage);
+                }
+                else{
+                    //Fehlermeldung
+                }
+            }
+        };
+
+
+        connectButton.setOnAction(connectToServer);
+
+
     }
 
     public static void main(String[] args) {
         launch(args);
+
+
+
     }
 }
