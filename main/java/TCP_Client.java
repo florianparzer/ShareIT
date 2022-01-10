@@ -25,6 +25,12 @@ public class TCP_Client {
     }
     */
 
+    /**
+     * Uploads a File to the Server
+     * @param localPath the path of the file to be uploaded
+     * @param remotePath the relative path under the documentRoot where the file should be saved on the server
+     * @return -1 in error or number of bytes transferred
+     */
     public int uploadFile(String localPath, String remotePath) {
         int totalSentBytes = 0;
         //Declare Streams
@@ -60,6 +66,12 @@ public class TCP_Client {
         return totalSentBytes;
     }
 
+    /**
+     * Downloads a File from the Server
+     * @param localPath the path where the file should be saved
+     * @param remotePath the relative path under the documentRoot of file on the server
+     * @return -1 in error or number of bytes transferred
+     */
     public int downloadFile(String localPath, String remotePath){
         //Declaration of Streams and variables
         int totalReadBytes = 0;
