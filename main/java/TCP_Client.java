@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class TCP_Client {
     private Socket serverSocket;
-    private int commandLen = 100;
+    private int commandLen = 500;
 
     public TCP_Client(String ip, int port) throws IOException {
         this.serverSocket = new Socket(ip, port);

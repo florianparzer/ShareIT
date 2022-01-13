@@ -10,7 +10,9 @@ public class ClientConnection implements Runnable{
     private Socket clientSocket;
     private TCP_Server handler;
     private Thread connectionThread;
-    private int commandLen = 200;
+    private int commandLen = 500;
+    private String ack = "200";
+    private String error = "500";
 
     public ClientConnection(Socket clientSocket, TCP_Server handler) {
         this.clientSocket = clientSocket;
@@ -39,32 +41,34 @@ public class ClientConnection implements Runnable{
                     downloadFile(handler.getDocumentRoot() + commandText.split(" ")[1]);
                 }else if(commandText.startsWith("rename")){
                     commandText.split(" ");
-                }else if(commandText.startsWith("ls")){
-                    //List Command
-                    try {
-                        String content =listContent(handler.getDocumentRoot() + commandText.split(" ")[1]);
-                        out.write("200".getBytes(StandardCharsets.UTF_8));
-                        out.write(content.getBytes(StandardCharsets.UTF_8));
-                    }catch (IndexOutOfBoundsException|NullPointerException e){
-                        e.printStackTrace();
-                        out.write("500".getBytes(StandardCharsets.UTF_8));
+                }else {
+                    if(commandText.startsWith("ls")){
+                        //List Command
+                        try {
+                            String content =listContent(handler.getDocumentRoot() + commandText.split(" ")[1]);
+                            out.write(ack.getBytes(StandardCharsets.UTF_8));
+                            out.write(content.getBytes(StandardCharsets.UTF_8));
+                        }catch (IndexOutOfBoundsException|NullPointerException e){
+                            e.printStackTrace();
+                            out.write(error.getBytes(StandardCharsets.UTF_8));
+                        }
+                    }else if(commandText.startsWith("isReadable")){
+                        String file = commandText.split(" ")[1];
+                        File readFile = new File(handler.getDocumentRoot()+file);
+                        if(!readFile.canRead()){
+                            out.write(error.getBytes(StandardCharsets.UTF_8));
+                            continue;
+                        }
+                        out.write(ack.getBytes(StandardCharsets.UTF_8));
+                    }else if(commandText.startsWith("isWriteable")){
+                        String file = commandText.split(" ")[1];
+                        File writeFile = new File(handler.getDocumentRoot()+file);
+                        if(!writeFile.canWrite()){
+                            out.write(error.getBytes(StandardCharsets.UTF_8));
+                            continue;
+                        }
+                        out.write(ack.getBytes(StandardCharsets.UTF_8));
                     }
-                }else if(commandText.startsWith("isReadable")){
-                    String file = commandText.split(" ")[1];
-                    File readFile = new File(handler.getDocumentRoot()+file);
-                    if(!readFile.canRead()){
-                        out.write("500".getBytes(StandardCharsets.UTF_8));
-                        continue;
-                    }
-                    out.write("100".getBytes(StandardCharsets.UTF_8));
-                }else if(commandText.startsWith("isWriteable")){
-                    String file = commandText.split(" ")[1];
-                    File writeFile = new File(handler.getDocumentRoot()+file);
-                    if(!writeFile.canWrite()){
-                        out.write("500".getBytes(StandardCharsets.UTF_8));
-                        continue;
-                    }
-                    out.write("100".getBytes(StandardCharsets.UTF_8));
                 }
                 //TODO other Options
             }
