@@ -87,7 +87,23 @@ public class TCP_Server {
             try{
                 Socket client = localTcpServer.accept();
                 System.out.println("Server: connected to Client " + client.getInetAddress());
-                this.addClient(client);
+                byte[] input = new byte[1];
+                InputStream inputStream = client.getInputStream();
+                inputStream.read(input);
+                String option = new String(input);
+                if(option.equals("0")){
+                    this.addClient(client);
+                }else if(option.equals("1")){
+                    input = new byte[500];
+                    inputStream.read(input);
+                    option = getDocumentRoot()+ new String(input).trim();
+                    new ServerFileTransfer(true, client, option);
+                }else if(option.equals("2")){
+                    input = new byte[500];
+                    inputStream.read(input);
+                    option = getDocumentRoot()+ new String(input).trim();
+                    new ServerFileTransfer(false, client, option);
+                }
             }catch (IOException e){
                 e.printStackTrace();
             }

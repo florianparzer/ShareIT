@@ -1,4 +1,5 @@
 import java.io.*;
+import java.lang.reflect.Field;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -10,6 +11,7 @@ public class TCP_Client {
     public TCP_Client(String ip, int port) throws IOException {
         this.serverSocket = new Socket(ip, port);
         System.out.println("Client: connected to " + serverSocket.getInetAddress());
+        serverSocket.getOutputStream().write("0".getBytes(StandardCharsets.UTF_8));
     }
     //TODO Arsani
     /*
@@ -31,6 +33,35 @@ public class TCP_Client {
      * @param remotePath the relative path under the documentRoot where the file should be saved on the server
      * @return -1 in error or number of bytes transferred
      */
+    public int uploadFile(String localPath, String remotePath) {
+        File localFile = new File(localPath);
+        if(!localFile.canRead()){
+            return -1;
+        }
+        //Declare Streams
+        try{
+            OutputStream out = serverSocket.getOutputStream();
+            InputStream in = serverSocket.getInputStream();
+            byte [] inByte = new byte[3];
+
+            out.write("isWriteable ".concat(remotePath).getBytes(StandardCharsets.UTF_8));
+            in.read(inByte);
+            if(new String(inByte) == "500"){
+                return -1;
+            }
+
+            ClientFileTransfer fileTransfer = new ClientFileTransfer(localFile, remotePath,
+                    serverSocket.getInetAddress().getHostAddress()
+                    , serverSocket.getPort(), false);
+        }catch (IOException e){
+            e.printStackTrace();
+            return -1;
+        }
+        System.out.println("Started upload");
+        return 0;
+    }
+
+    /*
     public int uploadFile(String localPath, String remotePath) {
         int totalSentBytes = 0;
         //Declare Streams
@@ -65,6 +96,7 @@ public class TCP_Client {
         System.out.println("Finished upload");
         return totalSentBytes;
     }
+     */
 
     /**
      * Downloads a File from the Server
@@ -72,6 +104,38 @@ public class TCP_Client {
      * @param remotePath the relative path under the documentRoot of file on the server
      * @return -1 in error or number of bytes transferred
      */
+    public int downloadFile(String localPath, String remotePath){
+        //Declaration of Streams and variables
+        File localFile = new File(localPath);
+        if(!localFile.canWrite()){
+            return -1;
+        }
+
+        try{
+            InputStream in = serverSocket.getInputStream();
+            OutputStream tcpOut = serverSocket.getOutputStream();
+            byte[] inByte = new byte[3];
+
+            //Send Command to Server
+            tcpOut.write("isReadable ".concat(remotePath).getBytes(StandardCharsets.UTF_8));
+
+            in.read(inByte);
+            if(new String(inByte).equals("500")){
+                return -1;
+            }
+            ClientFileTransfer fileTransfer = new ClientFileTransfer(localFile, remotePath,
+                    serverSocket.getInetAddress().getHostAddress()
+                    , serverSocket.getPort(), true);
+        }catch (IOException e){
+            e.printStackTrace();
+            return -1;
+        }
+        System.out.println("Finished started");
+        return 0;
+    }
+
+
+    /*
     public int downloadFile(String localPath, String remotePath){
         //Declaration of Streams and variables
         int totalReadBytes = 0;
@@ -112,6 +176,8 @@ public class TCP_Client {
         System.out.println("Finished download");
         return totalReadBytes;
     }
+
+     */
 
     public String listContent(String path){
         if(path.isEmpty()){

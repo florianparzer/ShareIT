@@ -10,7 +10,7 @@ public class ClientConnection implements Runnable{
     private Socket clientSocket;
     private TCP_Server handler;
     private Thread connectionThread;
-    private int commandLen = 100;
+    private int commandLen = 200;
 
     public ClientConnection(Socket clientSocket, TCP_Server handler) {
         this.clientSocket = clientSocket;
@@ -49,6 +49,22 @@ public class ClientConnection implements Runnable{
                         e.printStackTrace();
                         out.write("500".getBytes(StandardCharsets.UTF_8));
                     }
+                }else if(commandText.startsWith("isReadable")){
+                    String file = commandText.split(" ")[1];
+                    File readFile = new File(handler.getDocumentRoot()+file);
+                    if(!readFile.canRead()){
+                        out.write("500".getBytes(StandardCharsets.UTF_8));
+                        continue;
+                    }
+                    out.write("100".getBytes(StandardCharsets.UTF_8));
+                }else if(commandText.startsWith("isWriteable")){
+                    String file = commandText.split(" ")[1];
+                    File writeFile = new File(handler.getDocumentRoot()+file);
+                    if(!writeFile.canWrite()){
+                        out.write("500".getBytes(StandardCharsets.UTF_8));
+                        continue;
+                    }
+                    out.write("100".getBytes(StandardCharsets.UTF_8));
                 }
                 //TODO other Options
             }
