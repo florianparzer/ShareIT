@@ -41,35 +41,34 @@ public class ClientConnection implements Runnable{
                     downloadFile(handler.getDocumentRoot() + commandText.split(" ")[1]);
                 }else if(commandText.startsWith("rename")){
                     commandText.split(" ");
-                }else {
-                    if(commandText.startsWith("ls")){
-                        //List Command
-                        try {
-                            String content =listContent(handler.getDocumentRoot() + commandText.split(" ")[1]);
-                            out.write(ack.getBytes(StandardCharsets.UTF_8));
-                            out.write(content.getBytes(StandardCharsets.UTF_8));
-                        }catch (IndexOutOfBoundsException|NullPointerException e){
-                            e.printStackTrace();
-                            out.write(error.getBytes(StandardCharsets.UTF_8));
-                        }
-                    }else if(commandText.startsWith("isReadable")){
-                        String file = commandText.split(" ")[1];
-                        File readFile = new File(handler.getDocumentRoot()+file);
-                        if(!readFile.canRead()){
-                            out.write(error.getBytes(StandardCharsets.UTF_8));
-                            continue;
-                        }
+                }else if(commandText.startsWith("ls")){
+                    //List Command
+                    try {
+                        String content =listContent(handler.getDocumentRoot() + commandText.split(" ")[1]);
                         out.write(ack.getBytes(StandardCharsets.UTF_8));
-                    }else if(commandText.startsWith("isWriteable")){
-                        String file = commandText.split(" ")[1];
-                        File writeFile = new File(handler.getDocumentRoot()+file);
-                        if(!writeFile.canWrite()){
-                            out.write(error.getBytes(StandardCharsets.UTF_8));
-                            continue;
-                        }
-                        out.write(ack.getBytes(StandardCharsets.UTF_8));
+                        out.write(content.getBytes(StandardCharsets.UTF_8));
+                    }catch (IndexOutOfBoundsException|NullPointerException e){
+                        e.printStackTrace();
+                        out.write(error.getBytes(StandardCharsets.UTF_8));
                     }
+                }else if(commandText.startsWith("isReadable")){
+                    String file = commandText.split(" ")[1];
+                    File readFile = new File(handler.getDocumentRoot()+file);
+                    if(!readFile.canRead()){
+                        out.write(error.getBytes(StandardCharsets.UTF_8));
+                        continue;
+                    }
+                    out.write(ack.getBytes(StandardCharsets.UTF_8));
+                }else if(commandText.startsWith("isWriteable")){
+                    String file = commandText.split(" ")[1];
+                    File writeFile = new File(handler.getDocumentRoot()+file);
+                    if(!writeFile.canWrite()){
+                        out.write(error.getBytes(StandardCharsets.UTF_8));
+                        continue;
+                    }
+                    out.write(ack.getBytes(StandardCharsets.UTF_8));
                 }
+
                 //TODO other Options
             }
         }catch (IOException e){
