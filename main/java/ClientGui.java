@@ -6,6 +6,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -14,6 +16,7 @@ import javafx.stage.Stage;
 import javafx.stage.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class ClientGui {
     private TCP_Client tcp_client;
@@ -27,14 +30,6 @@ public class ClientGui {
             e.printStackTrace();
         }
     }
-
-    //Path? wie ist das / zu handeln?
-    // testen!
-    // warnings
-    // redundant messages
-
-
-
 
 
 
@@ -206,6 +201,33 @@ public class ClientGui {
         scrollPane.setContent(filelist);
         scrollPane.setPannable(true); // it means that the user should be able to pan the viewport by using the mouse.
 
+        //drag and drop
+        scrollPane.setOnDragOver(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event) {
+                if(event.getDragboard().hasFiles()){
+                    event.acceptTransferModes(TransferMode.ANY); // + symbol, -> for accepting the data
+                }
+                event.consume();
+            }
+        });
+
+        scrollPane.setOnDragDropped(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event) {
+                String file = event.getDragboard().getUrl();
+                file = file.substring(file.indexOf("/") + 1);
+                System.out.println(file);
+                // String bearbeiten, leerzeichen mit unterstrich ersetzen, kein slash, backslash etc
+                int i = file.lastIndexOf("/");
+                String remotePath = path + file.substring(i + 1, file.length());
+                // auf der GUI anpassen, createlements funkiton
+                tcp_client.uploadFile(file, remotePath);
+                createGUIElements(filelist);
+
+
+            }
+        });
 
         TextField uploadFrom = new TextField();
         TextField downloadFrom = new TextField();
