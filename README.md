@@ -17,7 +17,7 @@
 
 - [ ] Upload der Files mittels Drag&Drop (Arsani)
 - [ ] Markieren bestimmter Files als Favorieten (Arsani)
-- [ ] Eigene Threads für den Upload und Download im Hintergrund (Florian)
+- [x] Eigene Threads für den Upload und Download im Hintergrund (Florian)
 
 ## Nice-to-have Features
 
