@@ -6,18 +6,14 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.stage.*;
+
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
 
 public class Main extends Application{
 
@@ -33,7 +29,7 @@ public class Main extends Application{
         ImageView logoview = new ImageView(image);
 
         TextField ipAndPortTextfield = new TextField();
-        Label label = new Label("IP and Port:");
+        Label label = new Label("IP:Port -> ");
 
         Button connectButton = new Button("Connect");
         connectButton.setPrefWidth(120);
@@ -60,14 +56,26 @@ public class Main extends Application{
         primaryStage.setScene(loginScene);
         primaryStage.show();
 
-        EventHandler<ActionEvent> connectToServer = new EventHandler<ActionEvent>() {
+
+
+        EventHandler<ActionEvent> connectToServer = new EventHandler<>() {
             @Override
             public void handle(ActionEvent event) {
-                if(true/*Wenn die IP, Port und Username stimmen*/){
-                    ClientGui.startFilesharing(primaryStage);
+
+                String ip = ipAndPortTextfield.getText().split(":")[0];
+                int port = Integer.parseInt(ipAndPortTextfield.getText().split(":")[1]);
+                if(ip.length() < 8){
+                    try{
+                        ClientGui clientGui = new ClientGui(ip, port); // Hier soll eine Exception geworfen werden, falls das erstellen nicht funktioniert hat
+                        clientGui.startFilesharing(primaryStage);
+                    }
+                    catch(Exception e){
+                        e.printStackTrace();
+                        return;  //warning ?
+                    }
                 }
                 else{
-                    //Fehlermeldung
+                    return; //warning ?
                 }
             }
         };
