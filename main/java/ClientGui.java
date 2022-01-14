@@ -108,6 +108,7 @@ public class ClientGui {
     public void createGUIElements(VBox filelist){
         filelist.getChildren().clear();
         String input = tcp_client.listContent(path);
+        System.out.println(input);
         if(input == null){
             errorPopup("Could not list Content");
             return;
@@ -226,15 +227,12 @@ public class ClientGui {
             public void handle(DragEvent event) {
                 String file = event.getDragboard().getUrl();
                 file = file.substring(file.indexOf("/") + 1);
-                System.out.println(file);
                 // String bearbeiten, leerzeichen mit unterstrich ersetzen, kein slash, backslash etc
                 int i = file.lastIndexOf("/");
                 String remotePath = path + file.substring(i + 1, file.length());
                 // auf der GUI anpassen, createlements funkiton
                 tcp_client.uploadFile(file, remotePath);
                 createGUIElements(filelist);
-
-
             }
         });
 

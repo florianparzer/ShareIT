@@ -15,7 +15,7 @@
 
 ## Should-Have Features
 
-- [ ] Upload der Files mittels Drag&Drop (Arsani)
+- [x] Upload der Files mittels Drag&Drop (Arsani)
 - [ ] Markieren bestimmter Files als Favorieten (Arsani)
 - [x] Eigene Threads für den Upload und Download im Hintergrund (Florian)
 

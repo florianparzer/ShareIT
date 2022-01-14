@@ -198,6 +198,8 @@ public class ClientConnection implements Runnable{
         File dir = new File(path);
         TreeSet <String> content = new TreeSet<>();
         File tmp;
+
+
         for(String name: dir.list()){
             tmp = new File(dir,name);
             if(tmp.isDirectory()){
