@@ -14,18 +14,49 @@ public class TCP_Client {
         serverSocket.getOutputStream().write("0".getBytes(StandardCharsets.UTF_8));
     }
     //TODO Arsani
-    /*
-    //>>>"rename <oldPath> <newPath>"
-    public int rename(String path, String newPath){
+       public int rename(String path, String newPath){
         try {
-            serverSocket.getOutputStream().write("");
+            //get the name of file from server,
+            String s = "rename " + path + " " + newPath;
+            byte[] byteArr = new byte[3];
+            serverSocket.getOutputStream().write(s.getBytes(StandardCharsets.UTF_8));
+            serverSocket.getInputStream().read(byteArr);
+            String input = new String(byteArr);
+
+            if(input.equals("500")){
+                return -1;
+            }
+            else{
+                return 0;
+            }
+
         }catch (IOException e){
             e.printStackTrace();
             return -1;
         }
-        return 0;
     }
-    */
+
+    public int delete(String path){
+        try {
+            //get the name of file from server,
+            String s = "delete " + path;
+            byte[] byteArr = new byte[3];
+            serverSocket.getOutputStream().write(s.getBytes(StandardCharsets.UTF_8));
+            serverSocket.getInputStream().read(byteArr);
+            String input = new String(byteArr);
+
+            if(input.equals("500")){
+                return -1;
+            }
+            else{
+                return 0;
+            }
+
+        }catch (IOException e){
+            e.printStackTrace();
+            return -1;
+        }
+    }
 
     /**
      * Uploads a File to the Server
