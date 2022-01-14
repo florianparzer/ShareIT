@@ -43,6 +43,7 @@ public class TCP_Client {
             byte[] byteArr = new byte[3];
             serverSocket.getOutputStream().write(s.getBytes(StandardCharsets.UTF_8));
             serverSocket.getInputStream().read(byteArr);
+            System.out.println(s);
             String input = new String(byteArr);
 
             if(input.equals("500")){
@@ -212,11 +213,13 @@ public class TCP_Client {
 
     public String listContent(String path){
         if(path.isEmpty()){
-            path = ".";
+            path = "/";
         }
+        /*
         if(path.startsWith("/")){
             path = path.substring(1);
         }
+        */
         String result = "";
         try {
             OutputStream out = serverSocket.getOutputStream();
@@ -255,7 +258,6 @@ public class TCP_Client {
      * @throws IOException
      */
     public void close() throws IOException{
-        //TODO Send Close CMD
         OutputStream out = serverSocket.getOutputStream();
         out.write("closeConnection".getBytes(StandardCharsets.UTF_8));
         serverSocket.close();

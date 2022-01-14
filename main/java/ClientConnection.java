@@ -1,7 +1,6 @@
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.TreeSet;
@@ -70,11 +69,12 @@ public class ClientConnection implements Runnable{
                 }else if(commandText.startsWith("delete")){
                     delete(handler.getDocumentRoot() + commandText.split(" ")[1]);
                 }
-
+                command = new byte[commandLen];
                 //TODO other Options
             }
         }catch (IOException e){
             e.printStackTrace();
+            closeConnection();
         }
     }
 
@@ -235,11 +235,20 @@ public class ClientConnection implements Runnable{
     public int delete(String path){
         try{
             File f = new File(path);
+            boolean hasWorked = false;
 
             try{
-                if(f.delete()){
+                if(f.isDirectory()){
+                    hasWorked = deleteDir(f);
+                }else{
+                    hasWorked = f.delete();
+                }
+                if(hasWorked){
                     clientSocket.getOutputStream().write("200".getBytes(StandardCharsets.UTF_8));
                     return 0;
+                }else {
+                    clientSocket.getOutputStream().write("500".getBytes(StandardCharsets.UTF_8));
+                    return -1;
                 }
             }
             catch (IOException e){
@@ -256,6 +265,20 @@ public class ClientConnection implements Runnable{
             }
         }
         return 0;
+    }
+
+    public static boolean deleteDir(File folder) {
+        File[] files = folder.listFiles();
+        if(files!=null) {
+            for(File f: files) {
+                if(f.isDirectory()) {
+                    deleteDir(f);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        return folder.delete();
     }
     
     @Override

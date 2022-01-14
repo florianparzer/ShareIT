@@ -21,14 +21,10 @@ import java.util.List;
 public class ClientGui {
     private TCP_Client tcp_client;
     private String path = "/";
+    private Label currentPath;
 
-    public ClientGui(String ip, int port){
-        try{
-            tcp_client = new TCP_Client(ip, port);
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
+    public ClientGui(String ip, int port) throws IOException{
+        tcp_client = new TCP_Client(ip, port);
     }
 
 
@@ -89,20 +85,20 @@ public class ClientGui {
 
         window.showAndWait();
         String temp = newName.getText();
-            while(true) {
-                if (temp.length() == 0) {
-                    window.close();
-                    return null;
-                }
-                if(temp.contains(" ")){
-                    errorPopup("No space allowed!");
-                    window.showAndWait();
-                    temp = newName.getText();
-                }
-                else{
-                    break;
-                }
+        while(true) {
+            if (temp.length() == 0) {
+                window.close();
+                return null;
             }
+            if(temp.contains(" ")){
+                errorPopup("No space allowed!");
+                window.showAndWait();
+                temp = newName.getText();
+            }
+            else{
+                break;
+            }
+        }
 
         System.out.println(temp.length() + " . " + temp);
         return temp;
@@ -110,10 +106,16 @@ public class ClientGui {
     }
 
     public void createGUIElements(VBox filelist){
+        filelist.getChildren().clear();
         String input = tcp_client.listContent(path);
-        input = input.substring(0, input.length()); //redundant?
+        if(input == null){
+            errorPopup("Could not list Content");
+            return;
+        }
+        input = input.substring(0, input.length()-1);
+        boolean isFile;
         for(String element : input.split(" ")){
-
+            isFile = element.startsWith("f");
             element = element.split(":")[1];
             HBox item = new HBox();
             Label name = new Label(element);
@@ -135,22 +137,29 @@ public class ClientGui {
                     if(newName == null){
                         return;
                     }
-                    tcp_client.rename(path + name.getText(), path + newName);
-                    name.setText(newName);
+                    if(tcp_client.rename(path + name.getText(), path + newName) == 0) {
+                        //für verschieben ändern auf: tcp_client.rename(path + name.getText(), newName);
+                        createGUIElements(filelist);
+                    }else {
+                        errorPopup("Could not rename file");
+                    }
                 }
             };
             EventHandler<ActionEvent> delete = new EventHandler<>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    tcp_client.delete(path + name.getText());
-                    filelist.getChildren().remove(item);
+                    if(tcp_client.delete(path + name.getText()) == 0) {
+                        createGUIElements(filelist);
+                    }else{
+                        errorPopup("Error with Deletion");
+                    }
                 }
             };
 
             btnDelete.setOnAction(delete);
             btnRename.setOnAction(rename);
 
-            if(element.startsWith("f:")){
+            if(isFile){
                 EventHandler<ActionEvent> download = new EventHandler<>() {
                     @Override
                     public void handle(ActionEvent event) {
@@ -163,12 +172,12 @@ public class ClientGui {
             }
             else{
                 name.setTextFill(Color.DARKBLUE);
-                 EventHandler<ActionEvent> enter = new EventHandler<>() {
+                EventHandler<ActionEvent> enter = new EventHandler<>() {
                     @Override
                     public void handle(ActionEvent event) {
-                        path = path + "/" + name.getText();
-                        filelist.getChildren().clear();
-                        createGUIElements(filelist); // recursive
+                        path = path + name.getText() + "/";
+                        currentPath.setText(path);
+                        createGUIElements(filelist);
                     }
                 };
                 Button btnEnter = new Button("enter");
@@ -230,52 +239,49 @@ public class ClientGui {
         });
 
         TextField uploadFrom = new TextField();
-        TextField downloadFrom = new TextField();
-        TextField uploadTo = new TextField();
-        TextField downloadTo = new TextField();
 
-        Label label1 = new Label("to");
-        Label label2 = new Label("to");
-        Label currentPath = new Label(path);
+        currentPath = new Label(path);
         currentPath.setFont(Font.font("Verdana", FontWeight.BOLD, 13));
 
         Button btn_up = new Button("Upload");
-        Button btn_down = new Button("Download");
         Button btn_disconnect = new Button("Disconnect");
         Button btn_back = new Button("<-");
 
         Button selectFileUp = new Button();
-        Button selectFolderUp = new Button();
-        Button selectFileDown = new Button();
-        Button selectFolderDown = new Button();
-        Button [] buttons = {selectFileUp, selectFolderUp, selectFileDown, selectFolderDown};
+        //Button [] buttons = {selectFileUp, selectFolderUp, selectFileDown, selectFolderDown};
 
         Image image = new Image(new File("src/main/resources/f.png").toURI().toString());
         ImageView view1 = new ImageView(image);
-        ImageView view2 = new ImageView(image);
+        view1.setFitHeight(20);
+        view1.setFitWidth(20);
+        /*ImageView view2 = new ImageView(image);
         ImageView view3 = new ImageView(image);
         ImageView view4 = new ImageView(image);
         ImageView [] views = {view1, view2, view3, view4};
+
 
         for(ImageView imageView : views){
             imageView.setFitHeight(20);
             imageView.setFitWidth(20);
         }
+        */
 
+        /*
         int i = 0;
         for(Button button : buttons){
             button.setGraphic(views[i]);
             i++;
         }
+         */
+        selectFileUp.setGraphic(view1);
 
-        btn_down.setPrefWidth(120);
         btn_up.setPrefWidth(120);
         btn_disconnect.setPrefWidth(120);
 
         vbox.getChildren().addAll(hbox, scrollPane, hbox1, hbox2, hbox3);
         hbox.getChildren().addAll(btn_back, currentPath);
-        hbox1.getChildren().addAll(btn_up, uploadFrom, selectFileUp, label1, uploadTo, selectFolderUp);
-        hbox2.getChildren().addAll(btn_down, downloadFrom, selectFileDown, label2, downloadTo, selectFolderDown);
+        hbox1.getChildren().addAll(btn_up, uploadFrom, selectFileUp);
+        //hbox2.getChildren().addAll(btn_down, downloadFrom, selectFileDown, label2, downloadTo, selectFolderDown);
         hbox3.getChildren().add(btn_disconnect);
         vbox.setSpacing(10);
         hbox.setSpacing(20);
@@ -296,12 +302,7 @@ public class ClientGui {
                 File f = fileChooser.showOpenDialog(null);
 
                 try{
-                    if(event.getSource() == selectFileUp){
-                        uploadFrom.setText(f.getAbsolutePath());
-                    }
-                    else if(event.getSource() == selectFileDown){
-                        downloadFrom.setText(f.getAbsolutePath());
-                    }
+                    uploadFrom.setText(f.getAbsolutePath());
                 }
                 catch (Exception e){
                     e.printStackTrace();
@@ -309,6 +310,7 @@ public class ClientGui {
             }
         };
 
+        /*
         EventHandler<ActionEvent> popFolderWindow = new EventHandler<>() {
             @Override
             public void handle(ActionEvent event) {
@@ -327,37 +329,41 @@ public class ClientGui {
                 }
             }
         };
+         */
 
         EventHandler<ActionEvent> disconnectFromServer = new EventHandler<>() {
             @Override
             public void handle(ActionEvent event) {
-                //primaryStage.close();
-                renamePopUp();
+                try {
+                    tcp_client.close();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+                primaryStage.close();
+                System.exit(0);
             }
         };
 
         EventHandler<ActionEvent> stepBack = new EventHandler<>() {
             @Override
             public void handle(ActionEvent event) {
-                if(path.length() == 1){
-                    return; //warning?
-                }
-                else{
-                    path = path.substring(0, path.lastIndexOf("/") + 1);
-                    filelist.getChildren().clear();
+                if(path.length() != 1){
+                    path = path.substring(0, path.lastIndexOf("/", path.length()-2) + 1);
+                    currentPath.setText(path);
                     createGUIElements(filelist);
                 }
             }
         };
 
         selectFileUp.setOnAction(popFileWindow);
-        selectFolderUp.setOnAction(popFolderWindow);
+        /*selectFolderUp.setOnAction(popFolderWindow);
         selectFileDown.setOnAction(popFileWindow);
         selectFolderDown.setOnAction(popFolderWindow);
+         */
         btn_back.setOnAction(stepBack);
         btn_disconnect.setOnAction(disconnectFromServer);
 
-
+        createGUIElements(filelist);
         Scene guiScene = new Scene(vbox, 500, 600);
         primaryStage.setScene(guiScene);
         primaryStage.show();

@@ -64,18 +64,13 @@ public class Main extends Application{
 
                 String ip = ipAndPortTextfield.getText().split(":")[0];
                 int port = Integer.parseInt(ipAndPortTextfield.getText().split(":")[1]);
-                if(ip.length() < 8){
-                    try{
-                        ClientGui clientGui = new ClientGui(ip, port); // Hier soll eine Exception geworfen werden, falls das erstellen nicht funktioniert hat
-                        clientGui.startFilesharing(primaryStage);
-                    }
-                    catch(Exception e){
-                        e.printStackTrace();
-                        return;  //warning ?
-                    }
+                try{
+                    ClientGui clientGui = new ClientGui(ip, port);
+                    clientGui.startFilesharing(primaryStage);
                 }
-                else{
-                    return; //warning ?
+                catch(Exception e){
+                    e.printStackTrace();
+                    return;  //warning ?
                 }
             }
         };

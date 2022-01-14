@@ -5,13 +5,13 @@
 
 ## Must-Have Features
 
-- [ ] JavaFX Client als GUI (Arsani)
-- [x] Basic Konfiguration mittels Config-File (Florian)
-- [x] File upload/download (Florian)
-- [ ] Löschen von Dateien (Arsani)
-- [ ] Dateien umbenennen (Arsani)
-- [ ] Anzeigen der Files mittels Ordnerstruktur (Florian/Arsani)
-- [x] Zugriff gleichzeitig über mehrere Clients möglich (Florian)
+- [x] JavaFX Client als GUI
+- [x] Basic Konfiguration mittels Config-File
+- [x] File upload/download
+- [x] Löschen von Dateien
+- [x] Dateien umbenennen
+- [x] Anzeigen der Files mittels Ordnerstruktur
+- [x] Zugriff gleichzeitig über mehrere Clients möglich
 
 ## Should-Have Features
 
