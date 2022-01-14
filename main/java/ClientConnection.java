@@ -40,7 +40,7 @@ public class ClientConnection implements Runnable{
                     //Download Command
                     downloadFile(handler.getDocumentRoot() + commandText.split(" ")[1]);
                 }else if(commandText.startsWith("rename")){
-                    commandText.split(" ");
+                    rename(handler.getDocumentRoot() + commandText.split(" ")[1], handler.getDocumentRoot() + commandText.split(" ")[2]);
                 }else if(commandText.startsWith("ls")){
                     //List Command
                     try {
@@ -67,6 +67,8 @@ public class ClientConnection implements Runnable{
                         continue;
                     }
                     out.write(ack.getBytes(StandardCharsets.UTF_8));
+                }else if(commandText.startsWith("delete")){
+                    delete(handler.getDocumentRoot() + commandText.split(" ")[1]);
                 }
 
                 //TODO other Options
@@ -208,6 +210,54 @@ public class ClientConnection implements Runnable{
         return result.substring(0, result.length()-1)+";";
     }
 
+    public int rename(String path, String newPath){
+        File file = new File(path);
+        File file2 = new File(newPath);
+
+        if (file2.exists())
+            return 1;
+
+        boolean success = file.renameTo(file2);
+        try{
+            if (success) {
+                clientSocket.getOutputStream().write("200".getBytes(StandardCharsets.UTF_8));
+                return 0;
+            }
+            clientSocket.getOutputStream().write("500".getBytes(StandardCharsets.UTF_8));
+        }
+        catch (IOException e){
+            e.printStackTrace();
+            return -1;
+        }
+        return -1;
+    }
+
+    public int delete(String path){
+        try{
+            File f = new File(path);
+
+            try{
+                if(f.delete()){
+                    clientSocket.getOutputStream().write("200".getBytes(StandardCharsets.UTF_8));
+                    return 0;
+                }
+            }
+            catch (IOException e){
+                e.printStackTrace();
+            }
+
+        }catch (Exception e){
+            try{
+                clientSocket.getOutputStream().write("500".getBytes(StandardCharsets.UTF_8));
+            }
+            catch (IOException fail){
+                fail.printStackTrace();
+                return -1;
+            }
+        }
+        return 0;
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
