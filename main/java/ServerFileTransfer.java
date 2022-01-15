@@ -6,13 +6,15 @@ public class ServerFileTransfer implements Runnable{
     private Thread fileTransferThread;
     private Socket clientSocket;
     private String localPath;
+    private String tmpPath;
     private boolean isDownload;
     private int blockSize = 4096;
 
-    public ServerFileTransfer(boolean isDownload, Socket server, String localPath) {
+    public ServerFileTransfer(boolean isDownload, Socket server, String localPath, String tmp) {
         this.isDownload = isDownload;
         clientSocket = server;
         this.localPath = localPath;
+        tmpPath = tmp + localPath.substring(localPath.lastIndexOf("/"));
         fileTransferThread = new Thread(this);
         fileTransferThread.start();
     }
@@ -24,12 +26,16 @@ public class ServerFileTransfer implements Runnable{
         }else {
             uploadFile();
         }
-
+        try {
+            clientSocket.close();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     public void downloadFile(){
         try(
-                BufferedInputStream in = new BufferedInputStream(new FileInputStream(localPath))
+                BufferedInputStream in = new BufferedInputStream(new FileInputStream(tmpPath))
         ) {
             OutputStream out = clientSocket.getOutputStream();
             byte [] outBytes = new byte[blockSize];
@@ -42,6 +48,8 @@ public class ServerFileTransfer implements Runnable{
                 out.write(outBytes);
                 outBytes = new byte[blockSize];
             }
+
+            new File(tmpPath).renameTo(new File(localPath));
         }catch (IOException e){
             e.printStackTrace();
         }

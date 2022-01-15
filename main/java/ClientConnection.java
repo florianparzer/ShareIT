@@ -27,6 +27,7 @@ public class ClientConnection implements Runnable{
             OutputStream out = clientSocket.getOutputStream();
             InputStream in = clientSocket.getInputStream();
             while (true){
+                command = new byte[commandLen];
                 in.read(command);
                 commandText = new String(command).trim();
                 if(commandText.equals("closeConnection")){
@@ -69,7 +70,6 @@ public class ClientConnection implements Runnable{
                 }else if(commandText.startsWith("delete")){
                     delete(handler.getDocumentRoot() + commandText.split(" ")[1]);
                 }
-                command = new byte[commandLen];
                 //TODO other Options
             }
         }catch (IOException e){
@@ -198,7 +198,6 @@ public class ClientConnection implements Runnable{
         File dir = new File(path);
         TreeSet <String> content = new TreeSet<>();
         File tmp;
-
 
         for(String name: dir.list()){
             tmp = new File(dir,name);

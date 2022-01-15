@@ -33,6 +33,11 @@ public class ClientFileTransfer implements Runnable{
         }else {
             uploadFile();
         }
+        try {
+            serverSocket.close();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
 
@@ -70,7 +75,6 @@ public class ClientFileTransfer implements Runnable{
             int sentBytes = 0;
             byte [] outBytes = new byte[blockSize];
             OutputStream out = serverSocket.getOutputStream();
-
             while ((sentBytes = in.read(outBytes)) != -1){
                 if(sentBytes != blockSize){
                     outBytes = Arrays.copyOfRange(outBytes, 0, sentBytes);
@@ -78,6 +82,7 @@ public class ClientFileTransfer implements Runnable{
                 out.write(outBytes);
                 outBytes = new byte[blockSize];
             }
+            //out.close();
         }catch (IOException e){
             e.printStackTrace();
         }

@@ -43,9 +43,9 @@ public class TCP_Client {
             byte[] byteArr = new byte[3];
             serverSocket.getOutputStream().write(s.getBytes(StandardCharsets.UTF_8));
             serverSocket.getInputStream().read(byteArr);
-            System.out.println(s);
             String input = new String(byteArr);
 
+            System.out.println(input);
             if(input.equals("500")){
                 return -1;
             }

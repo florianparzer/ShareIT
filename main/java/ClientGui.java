@@ -108,7 +108,6 @@ public class ClientGui {
     public void createGUIElements(VBox filelist){
         filelist.getChildren().clear();
         String input = tcp_client.listContent(path);
-        System.out.println(input);
         if(input == null){
             errorPopup("Could not list Content");
             return;

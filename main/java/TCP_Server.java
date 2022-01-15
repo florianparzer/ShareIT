@@ -10,6 +10,7 @@ public class TCP_Server {
     private LinkedHashSet<ClientConnection> connections;
     private String configRoot;
     private String documentRoot;
+    private String tmpFolder;
 
     /**
      * Generates a new TCP_Server Object. In order to do that it reads parameters from a config-file
@@ -25,6 +26,7 @@ public class TCP_Server {
         Pattern commentPattern = Pattern.compile("(?:#.*|\\s*)");
         Pattern portPattern = Pattern.compile("(?:tcpPort:)\\s*([0-9]{1,5})\\s*");
         Pattern docPattern = Pattern.compile("(?:documentRoot:)\\s*([A-Za-z0-9/\\.\\-_\\?]+)\\s*");
+        Pattern tmpPattern = Pattern.compile("(?:tmp:)\\s*([A-Za-z0-9/\\.\\-_\\?]+)\\s*");
         String line;
         try(BufferedReader in = new BufferedReader(new FileReader(configRoot+ "server.conf"))) {
             //try(BufferedReader in = new BufferedReader(new FileReader("configRoot/server.conf"))) {
@@ -52,6 +54,12 @@ public class TCP_Server {
                     documentRoot = matcher.group(1);
                     continue;
                 }
+                matcher = tmpPattern.matcher(line);
+                if(matcher.matches()){
+                    //Line matches docPattern
+                    tmpFolder = matcher.group(1);
+                    continue;
+                }
             }
         }catch (IOException e){
             e.printStackTrace();
@@ -77,6 +85,10 @@ public class TCP_Server {
         return documentRoot;
     }
 
+    public String getTmpFolder() {
+        return tmpFolder;
+    }
+
     /**
      *Listens for new TCP Connections and creates and starts new ClientConnections
      */
@@ -97,12 +109,17 @@ public class TCP_Server {
                     input = new byte[500];
                     inputStream.read(input);
                     option = getDocumentRoot()+ new String(input).trim();
-                    new ServerFileTransfer(true, client, option);
+                    for (ClientConnection conn : connections){
+                        if (conn.equals(client)){
+                            System.out.println("Fuck");
+                        }
+                    }
+                    new ServerFileTransfer(true, client, option, tmpFolder);
                 }else if(option.equals("2")){
                     input = new byte[500];
                     inputStream.read(input);
                     option = getDocumentRoot()+ new String(input).trim();
-                    new ServerFileTransfer(false, client, option);
+                    new ServerFileTransfer(false, client, option, tmpFolder);
                 }
             }catch (IOException e){
                 e.printStackTrace();
