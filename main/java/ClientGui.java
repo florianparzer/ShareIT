@@ -77,15 +77,16 @@ public class ClientGui {
         window.setMinWidth(250);
 
         window.initModality(Modality.APPLICATION_MODAL); // Block other windows, until this one finished
+        TextField newName = new TextField();
+        Button btnConfirm = new Button("OK");
+        btnConfirm.setOnAction(event -> window.close());
         if(addfolder){
             window.setTitle("Add Folder");
         }
         else{
             window.setTitle("Rename");
+            newName.setText(currentPath.getText());
         }
-        TextField newName = new TextField();
-        Button btnConfirm = new Button("OK");
-        btnConfirm.setOnAction(event -> window.close());
 
         VBox vBox = new VBox();
 
@@ -101,7 +102,7 @@ public class ClientGui {
         window.showAndWait();
         String temp = newName.getText();
         while(true) {
-            if (temp.length() == 0) {
+            if (temp.length() == 0 || temp.endsWith("/")) {
                 window.close();
                 return null;
             }
@@ -153,7 +154,6 @@ public class ClientGui {
             //check if files are marked as favorite
             try {
                 String s = fileToString(new File("src/main/resources/Favorite_Files.txt"));
-                System.out.println(s);
                 if(s.contains(name.getText())){
                     btn_Fav.setGraphic(view_Star);
                 }
@@ -164,20 +164,18 @@ public class ClientGui {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            //checkForFavoriteFiles(name.getText(), btn_Fav, view_Star);
 
             EventHandler<ActionEvent> rename = new EventHandler<>() {
                 @Override
                 public void handle(ActionEvent event) {
                     String newName = renamePopUp(false);
-                    if(newName == null){
-                        return;
-                    }
-                    if(tcp_client.rename(path + name.getText(), path + newName) == 0) {
-                        //für verschieben ändern auf: tcp_client.rename(path + name.getText(), newName);
-                        createGUIElements(filelist);
-                    }else {
-                        errorPopup("Could not rename file");
+                    if(newName != null){
+                        if(tcp_client.rename(path + name.getText(), newName) == 0) {
+                            //für verschieben ändern auf: tcp_client.rename(path + name.getText(), newName);
+                            createGUIElements(filelist);
+                        }else {
+                            errorPopup("Could not rename file");
+                        }
                     }
                 }
             };
@@ -425,12 +423,13 @@ public class ClientGui {
             public void handle(DragEvent event) {
                 String file = event.getDragboard().getUrl();
                 file = file.substring(file.indexOf("/") + 1);
-
-                int i = file.lastIndexOf("/");
-                String remotePath = path + file.substring(i + 1);
-                tcp_client.uploadFile(file, remotePath);
-                createGUIElements(filelist);
-                event.consume();
+                if(!file.contains(" ")){
+                    int i = file.lastIndexOf("/");
+                    String remotePath = path + file.substring(i + 1);
+                    tcp_client.uploadFile(file, remotePath);
+                    createGUIElements(filelist);
+                    event.consume();
+                }
             }
         });
 
