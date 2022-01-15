@@ -171,6 +171,27 @@ public class TCP_Client {
         return result;
     }
 
+    public int createDir(String path){
+        try {
+            OutputStream out = serverSocket.getOutputStream();
+            InputStream in = serverSocket.getInputStream();
+            out.write("mkdir ".concat(path).getBytes(StandardCharsets.UTF_8));
+            byte[] inByte = new byte[3];
+            in.read(inByte);
+            String input = new String(inByte);
+            if(input.equals("100")){
+                return 0;
+            }else if(input.equals("500")){
+                return -1;
+            }else {
+                return -2;
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
     /**
      * Closes the TCP-Connection
      * @throws IOException

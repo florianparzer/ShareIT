@@ -69,8 +69,16 @@ public class ClientConnection implements Runnable{
                     out.write(ack.getBytes(StandardCharsets.UTF_8));
                 }else if(commandText.startsWith("delete")){
                     delete(handler.getDocumentRoot() + commandText.split(" ")[1]);
+                }else if(commandText.startsWith("mkdir")){
+                    int result = createDir(handler.getDocumentRoot() + commandText.split(" ")[1]);
+                    if(result == 0){
+                        out.write("200".getBytes(StandardCharsets.UTF_8));
+                    }else if(result == -1){
+                        out.write("500".getBytes(StandardCharsets.UTF_8));
+                    }else {
+                        out.write("501".getBytes(StandardCharsets.UTF_8));
+                    }
                 }
-                //TODO other Options
             }
         }catch (IOException e){
             e.printStackTrace();
@@ -280,6 +288,22 @@ public class ClientConnection implements Runnable{
             }
         }
         return folder.delete();
+    }
+
+    /**
+     * Creates a new directory
+     * @param path the path of the directory
+     * @return errorcode
+     */
+    public int createDir(String path){
+        File newDir = new File(path);
+        if(newDir.exists()){
+            return -2;
+        }
+        if(!newDir.mkdir()){
+            return -1;
+        }
+        return 0;
     }
     
     @Override
