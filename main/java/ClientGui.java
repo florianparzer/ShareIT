@@ -58,16 +58,19 @@ public class ClientGui {
 
     }
 
-    public String renamePopUp(){
+    public String renamePopUp(boolean addfolder){
         Stage window = new Stage();
         window.centerOnScreen();
         window.setMinHeight(150);
         window.setMinWidth(250);
 
         window.initModality(Modality.APPLICATION_MODAL); // Block other windows, until this one finished
-        window.setTitle("Rename");
-
-
+        if(addfolder){
+            window.setTitle("Add Folder");
+        }
+        else{
+            window.setTitle("Rename");
+        }
         TextField newName = new TextField();
         Button btnConfirm = new Button("OK");
         btnConfirm.setOnAction(event -> window.close());
@@ -117,23 +120,24 @@ public class ClientGui {
         for(String element : input.split(" ")){
             isFile = element.startsWith("f");
             element = element.split(":")[1];
+            System.out.println(element);
             HBox item = new HBox();
             Label name = new Label(element);
 
-            Button btnRename = new Button("rename");
-            Button btnDelete = new Button("delete");
+            Button btn_Rename = new Button("rename");
+            Button btn_Delete = new Button("delete");
             name.setMaxWidth(Double.MAX_VALUE);
-            //item.setHgrow(name, Priority.ALWAYS);
+            item.setHgrow(name, Priority.ALWAYS);
 
             item.setSpacing(10);
-
+            item.setPadding(new Insets(8, 8, 8, 15));
             filelist.getChildren().add(item);
 
 
             EventHandler<ActionEvent> rename = new EventHandler<>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    String newName = renamePopUp();
+                    String newName = renamePopUp(false);
                     if(newName == null){
                         return;
                     }
@@ -156,18 +160,23 @@ public class ClientGui {
                 }
             };
 
-            btnDelete.setOnAction(delete);
-            btnRename.setOnAction(rename);
+            btn_Delete.setOnAction(delete);
+            btn_Rename.setOnAction(rename);
 
             if(isFile){
                 EventHandler<ActionEvent> download = new EventHandler<>() {
                     @Override
                     public void handle(ActionEvent event) {
-
+                        DirectoryChooser dirChooser = new DirectoryChooser();
+                        File f = dirChooser.showDialog(null);
+                        if(f != null){
+                            tcp_client.downloadFile(f.getPath(), path + name.getText());
+                            createGUIElements(filelist);
+                        }
                     }
                 };
                 Button btnDownload = new Button("download");
-                item.getChildren().addAll(name, btnDownload, btnRename, btnDelete);
+                item.getChildren().addAll(name, btnDownload, btn_Rename, btn_Delete);
                 btnDownload.setOnAction(download);
             }
             else{
@@ -180,14 +189,12 @@ public class ClientGui {
                         createGUIElements(filelist);
                     }
                 };
-                Button btnEnter = new Button("enter");
-                item.getChildren().addAll(name, btnEnter, btnRename, btnDelete);
-                btnEnter.setOnAction(enter);
+                Button btn_Enter = new Button("enter");
+                btn_Enter.setPrefWidth(70);
+                item.getChildren().addAll(name, btn_Enter, btn_Rename, btn_Delete);
+                btn_Enter.setOnAction(enter);
             }
         }
-
-
-
 
     }
 
@@ -198,96 +205,64 @@ public class ClientGui {
         primaryStage.setMinWidth(650);
 
         VBox vbox = new VBox();
-        HBox hbox = new HBox();
+        HBox hbox0 = new HBox();
         HBox hbox1 = new HBox();
         HBox hbox2 = new HBox();
         HBox hbox3 = new HBox();
-        hbox3.setAlignment(Pos.CENTER);
         VBox filelist = new VBox();
+        hbox3.setAlignment(Pos.CENTER);
         filelist.setAlignment(Pos.CENTER);
+
 
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setContent(filelist);
         scrollPane.setPannable(true); // it means that the user should be able to pan the viewport by using the mouse.
-
-        //drag and drop
-        scrollPane.setOnDragOver(new EventHandler<DragEvent>() {
-            @Override
-            public void handle(DragEvent event) {
-                if(event.getDragboard().hasFiles()){
-                    event.acceptTransferModes(TransferMode.ANY); // + symbol, -> for accepting the data
-                }
-                event.consume();
-            }
-        });
-
-        scrollPane.setOnDragDropped(new EventHandler<DragEvent>() {
-            @Override
-            public void handle(DragEvent event) {
-                String file = event.getDragboard().getUrl();
-                file = file.substring(file.indexOf("/") + 1);
-                // String bearbeiten, leerzeichen mit unterstrich ersetzen, kein slash, backslash etc
-                int i = file.lastIndexOf("/");
-                String remotePath = path + file.substring(i + 1, file.length());
-                // auf der GUI anpassen, createlements funkiton
-                tcp_client.uploadFile(file, remotePath);
-                createGUIElements(filelist);
-            }
-        });
 
         TextField uploadFrom = new TextField();
 
         currentPath = new Label(path);
         currentPath.setFont(Font.font("Verdana", FontWeight.BOLD, 13));
 
-        Button btn_up = new Button("Upload");
+        Button btn_upload = new Button("Upload");
         Button btn_disconnect = new Button("Disconnect");
-        Button btn_back = new Button("<-");
+        Button btn_back = new Button();
+        Button btn_refresh = new Button();
+        Button btn_selectFile = new Button();
+        Button btn_createFolder = new Button("+");
 
-        Button selectFileUp = new Button();
-        //Button [] buttons = {selectFileUp, selectFolderUp, selectFileDown, selectFolderDown};
+        Image image_folder = new Image(new File("src/main/resources/f.png").toURI().toString());
+        ImageView view_folder = new ImageView(image_folder);
+        view_folder.setFitHeight(20);
+        view_folder.setFitWidth(20);
 
-        Image image = new Image(new File("src/main/resources/f.png").toURI().toString());
-        ImageView view1 = new ImageView(image);
-        view1.setFitHeight(20);
-        view1.setFitWidth(20);
-        /*ImageView view2 = new ImageView(image);
-        ImageView view3 = new ImageView(image);
-        ImageView view4 = new ImageView(image);
-        ImageView [] views = {view1, view2, view3, view4};
+        Image image_refresh = new Image(new File("src/main/resources/refresh.png").toURI().toString());
+        ImageView view_refresh = new ImageView(image_refresh);
+        view_refresh.setFitHeight(20);
+        view_refresh.setFitWidth(20);
 
+        Image image_back = new Image(new File("src/main/resources/back.png").toURI().toString());
+        ImageView view_back = new ImageView(image_back);
+        view_back.setFitHeight(20);
+        view_back.setFitWidth(20);
 
-        for(ImageView imageView : views){
-            imageView.setFitHeight(20);
-            imageView.setFitWidth(20);
-        }
-        */
-
-        /*
-        int i = 0;
-        for(Button button : buttons){
-            button.setGraphic(views[i]);
-            i++;
-        }
-         */
-        selectFileUp.setGraphic(view1);
-
-        btn_up.setPrefWidth(120);
+        btn_selectFile.setGraphic(view_folder);
+        btn_back.setGraphic(view_back);
+        btn_refresh.setGraphic(view_refresh);
+        btn_upload.setPrefWidth(120);
         btn_disconnect.setPrefWidth(120);
 
-        vbox.getChildren().addAll(hbox, scrollPane, hbox1, hbox2, hbox3);
-        hbox.getChildren().addAll(btn_back, currentPath);
-        hbox1.getChildren().addAll(btn_up, uploadFrom, selectFileUp);
-        //hbox2.getChildren().addAll(btn_down, downloadFrom, selectFileDown, label2, downloadTo, selectFolderDown);
+        vbox.getChildren().addAll(hbox0, scrollPane, hbox1, hbox2, hbox3);
+        hbox0.getChildren().addAll(btn_back, btn_refresh, currentPath);
+        hbox1.getChildren().addAll(btn_upload, uploadFrom, btn_selectFile, btn_createFolder);
         hbox3.getChildren().add(btn_disconnect);
         vbox.setSpacing(10);
-        hbox.setSpacing(20);
+        hbox0.setSpacing(20);
         hbox1.setSpacing(10);
         hbox2.setSpacing(10);
         hbox3.setSpacing(10);
 
         vbox.setPadding(new Insets(10));
-        hbox.setPadding(new Insets(10));
+        hbox0.setPadding(new Insets(10));
         hbox1.setPadding(new Insets(10));
         hbox2.setPadding(new Insets(10));
         hbox3.setPadding(new Insets(10));
@@ -295,38 +270,15 @@ public class ClientGui {
         EventHandler<ActionEvent> popFileWindow = new EventHandler<>() {
             @Override
             public void handle(ActionEvent event) {
+                uploadFrom.clear();
                 FileChooser fileChooser = new FileChooser();
                 File f = fileChooser.showOpenDialog(null);
-
-                try{
+                if(f != null){
                     uploadFrom.setText(f.getAbsolutePath());
                 }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
             }
         };
 
-        /*
-        EventHandler<ActionEvent> popFolderWindow = new EventHandler<>() {
-            @Override
-            public void handle(ActionEvent event) {
-                DirectoryChooser directoryChooser = new DirectoryChooser();
-                File d = directoryChooser.showDialog(null);
-                try{
-                    if(event.getSource() == selectFolderDown){
-                        downloadTo.setText(d.getAbsolutePath());
-                    }
-                    else if(event.getSource() == selectFolderUp){
-                        uploadTo.setText(d.getAbsolutePath());
-                    }
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        };
-         */
 
         EventHandler<ActionEvent> disconnectFromServer = new EventHandler<>() {
             @Override
@@ -352,13 +304,82 @@ public class ClientGui {
             }
         };
 
-        selectFileUp.setOnAction(popFileWindow);
-        /*selectFolderUp.setOnAction(popFolderWindow);
-        selectFileDown.setOnAction(popFileWindow);
-        selectFolderDown.setOnAction(popFolderWindow);
-         */
+        EventHandler<ActionEvent> makeRefresh = new EventHandler<>() {
+            @Override
+            public void handle(ActionEvent event) {
+                createGUIElements(filelist);
+            }
+        };
+
+        EventHandler<ActionEvent> addFolder = new EventHandler<>() {
+            @Override
+            public void handle(ActionEvent event) {
+                String foldername = renamePopUp(true);
+
+                //TODO Folder Backend
+
+                createGUIElements(filelist);
+            }
+        };
+
+
+        EventHandler<ActionEvent> doUpload = new EventHandler<>() {
+            @Override
+            public void handle(ActionEvent event) {
+                String localpath = uploadFrom.getText();
+                localpath = localpath.replaceAll("\\\\", "/");
+                if(localpath.contains(" ")){
+                    errorPopup("No space allowed!");
+                }
+                else if(localpath != null){
+
+                    int i = localpath.lastIndexOf("/");
+                    String remotePath = path + localpath.substring(i + 1);
+
+                    System.out.println(path);
+                    System.out.println(localpath);
+                    System.out.println(remotePath);
+
+                    tcp_client.uploadFile(localpath, remotePath);
+                    createGUIElements(filelist);
+
+                    uploadFrom.clear();
+                    event.consume();
+                }
+            }
+        };
+
+        //drag and drop
+        scrollPane.setOnDragOver(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event) {
+                if(event.getDragboard().hasFiles()){
+                    event.acceptTransferModes(TransferMode.ANY); // + symbol, -> for accepting the data
+                }
+                event.consume();
+            }
+        });
+
+        scrollPane.setOnDragDropped(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event) {
+                String file = event.getDragboard().getUrl();
+                file = file.substring(file.indexOf("/") + 1);
+
+                int i = file.lastIndexOf("/");
+                String remotePath = path + file.substring(i + 1);
+                tcp_client.uploadFile(file, remotePath);
+                createGUIElements(filelist);
+                event.consume();
+            }
+        });
+
+        btn_upload.setOnAction(doUpload);
+        btn_refresh.setOnAction(makeRefresh);
+        btn_selectFile.setOnAction(popFileWindow);
         btn_back.setOnAction(stepBack);
         btn_disconnect.setOnAction(disconnectFromServer);
+        btn_createFolder.setOnAction(addFolder);
 
         createGUIElements(filelist);
         Scene guiScene = new Scene(vbox, 500, 600);
