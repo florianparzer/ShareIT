@@ -216,6 +216,9 @@ public class ClientConnection implements Runnable{
             }
         }
         result = content.stream().reduce("",String::concat);
+        if(result.equals("")){
+            return ";";
+        }
         return result.substring(0, result.length()-1)+";";
     }
 

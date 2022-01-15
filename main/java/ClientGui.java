@@ -378,7 +378,12 @@ public class ClientGui {
             public void handle(ActionEvent event) {
                 String foldername = renamePopUp(true);
 
-                //TODO Folder Backend
+                int result = tcp_client.createDir(path+foldername);
+                if(result == -1){
+                    errorPopup("Internal Error occurred");
+                }else if(result == -2){
+                    errorPopup("Already exists");
+                }
 
                 createGUIElements(filelist);
             }

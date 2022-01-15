@@ -179,7 +179,7 @@ public class TCP_Client {
             byte[] inByte = new byte[3];
             in.read(inByte);
             String input = new String(inByte);
-            if(input.equals("100")){
+            if(input.equals("200")){
                 return 0;
             }else if(input.equals("500")){
                 return -1;
