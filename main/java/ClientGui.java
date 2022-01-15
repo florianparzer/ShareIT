@@ -120,7 +120,6 @@ public class ClientGui {
         for(String element : input.split(" ")){
             isFile = element.startsWith("f");
             element = element.split(":")[1];
-            System.out.println(element);
             HBox item = new HBox();
             Label name = new Label(element);
 
@@ -170,7 +169,7 @@ public class ClientGui {
                         DirectoryChooser dirChooser = new DirectoryChooser();
                         File f = dirChooser.showDialog(null);
                         if(f != null){
-                            tcp_client.downloadFile(f.getPath() + name.getText(), path + name.getText());
+                            tcp_client.downloadFile(f.getPath() + "\\" + name.getText(), path + name.getText());
                             createGUIElements(filelist);
                         }
                     }
@@ -228,7 +227,7 @@ public class ClientGui {
         Button btn_back = new Button();
         Button btn_refresh = new Button();
         Button btn_selectFile = new Button();
-        Button btn_createFolder = new Button("+");
+        Button btn_createFolder = new Button("Create Directory");
 
         Image image_folder = new Image(new File("src/main/resources/f.png").toURI().toString());
         ImageView view_folder = new ImageView(image_folder);

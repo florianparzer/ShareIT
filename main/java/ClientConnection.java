@@ -62,7 +62,7 @@ public class ClientConnection implements Runnable{
                 }else if(commandText.startsWith("isWriteable")){
                     String file = commandText.split(" ")[1];
                     File writeFile = new File(handler.getDocumentRoot()+file);
-                    if(!writeFile.canWrite()){
+                    if(writeFile.exists()){
                         out.write(error.getBytes(StandardCharsets.UTF_8));
                         continue;
                     }

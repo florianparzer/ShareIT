@@ -13,8 +13,8 @@ public class TCP_Client {
         System.out.println("Client: connected to " + serverSocket.getInetAddress());
         serverSocket.getOutputStream().write("0".getBytes(StandardCharsets.UTF_8));
     }
-    //TODO Arsani
-       public int rename(String path, String newPath){
+
+    public int rename(String path, String newPath){
         try {
             //get the name of file from server,
             String s = "rename " + path + " " + newPath;
@@ -93,43 +93,6 @@ public class TCP_Client {
         return 0;
     }
 
-    /*
-    public int uploadFile(String localPath, String remotePath) {
-        int totalSentBytes = 0;
-        //Declare Streams
-        try(
-            BufferedInputStream in = new BufferedInputStream(new FileInputStream(new File(localPath)))
-        ){
-            OutputStream out = serverSocket.getOutputStream();
-            InputStream tcpIn = serverSocket.getInputStream();
-            byte [] inByte = new byte[3];
-            byte [] outBytes = new byte[4096];
-            int sentBytes = 0;
-
-            out.write("upload ".concat(remotePath).getBytes(StandardCharsets.UTF_8));
-            tcpIn.read(inByte);
-            if(new String(inByte).equals("500")){
-                return -1;
-            }
-            //Read from File and write to TCP-Stream
-            while ((sentBytes = in.read(outBytes)) != -1){
-                if(sentBytes != 4096){
-                    //If block is not full only copy written bytes
-                    outBytes = Arrays.copyOfRange(outBytes, 0, sentBytes);
-                }
-                out.write(outBytes);
-                totalSentBytes += sentBytes;
-                outBytes = new byte[4096];
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-            return -1;
-        }
-        System.out.println("Finished upload");
-        return totalSentBytes;
-    }
-     */
-
     /**
      * Downloads a File from the Server
      * @param localPath the path where the file should be saved
@@ -138,8 +101,12 @@ public class TCP_Client {
      */
     public int downloadFile(String localPath, String remotePath){
         //Declaration of Streams and variables
+        //localPath = "src/main/resources/test.txt";
+        System.out.println(localPath);
+        System.out.println(remotePath);
         File localFile = new File(localPath);
-        if(!localFile.canWrite()){
+        if(localFile.exists()){
+            System.out.println(localFile.canWrite());
             return -1;
         }
 
@@ -166,60 +133,16 @@ public class TCP_Client {
         return 0;
     }
 
-
-    /*
-    public int downloadFile(String localPath, String remotePath){
-        //Declaration of Streams and variables
-        int totalReadBytes = 0;
-        try(
-                BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(new File(localPath)))
-        ) {
-            InputStream in = serverSocket.getInputStream();
-            OutputStream tcpOut = serverSocket.getOutputStream();
-            byte[] inByte = new byte[3];
-            int readBytes = 0;
-
-            //Send Command to Server
-            tcpOut.write("download ".concat(remotePath).getBytes(StandardCharsets.UTF_8));
-
-            in.read(inByte);
-            if(new String(inByte).equals("500")){
-                return -1;
-            }
-            inByte = new byte[4096];
-            //Read from InputStream
-            while ((readBytes = in.read(inByte)) != -1) {
-                if (readBytes != 4096) {
-                    //Enter if block is not full
-                    //Copy only written bytes
-                    inByte = Arrays.copyOfRange(inByte, 0, readBytes);
-                    out.write(inByte);
-                    totalReadBytes += readBytes;
-                    break;
-                }
-                out.write(inByte);
-                totalReadBytes += readBytes;
-                inByte = new byte[4096];
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-            return -1;
-        }
-        System.out.println("Finished download");
-        return totalReadBytes;
-    }
-
+    /**
+     * Querys the server of the content of the current path
+     * @param path The relative path on the server
+     * @return a String containing the content of the Directory
      */
-
     public String listContent(String path){
         if(path.isEmpty()){
             path = "/";
         }
-        /*
-        if(path.startsWith("/")){
-            path = path.substring(1);
-        }
-        */
+
         String result = "";
         try {
             OutputStream out = serverSocket.getOutputStream();
