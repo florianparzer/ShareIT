@@ -109,11 +109,6 @@ public class TCP_Server {
                     input = new byte[500];
                     inputStream.read(input);
                     option = getDocumentRoot()+ new String(input).trim();
-                    for (ClientConnection conn : connections){
-                        if (conn.equals(client)){
-                            System.out.println("Fuck");
-                        }
-                    }
                     new ServerFileTransfer(true, client, option, tmpFolder);
                 }else if(option.equals("2")){
                     input = new byte[500];

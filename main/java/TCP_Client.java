@@ -45,7 +45,6 @@ public class TCP_Client {
             serverSocket.getInputStream().read(byteArr);
             String input = new String(byteArr);
 
-            System.out.println(input);
             if(input.equals("500")){
                 return -1;
             }
@@ -101,12 +100,8 @@ public class TCP_Client {
      */
     public int downloadFile(String localPath, String remotePath){
         //Declaration of Streams and variables
-        //localPath = "src/main/resources/test.txt";
-        System.out.println(localPath);
-        System.out.println(remotePath);
         File localFile = new File(localPath);
         if(localFile.exists()){
-            System.out.println(localFile.canWrite());
             return -1;
         }
 
