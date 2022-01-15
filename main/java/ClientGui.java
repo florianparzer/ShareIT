@@ -15,8 +15,11 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.stage.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
+import java.util.Scanner;
 
 public class ClientGui {
     private TCP_Client tcp_client;
@@ -27,7 +30,16 @@ public class ClientGui {
         tcp_client = new TCP_Client(ip, port);
     }
 
-
+    public static String fileToString(File file) throws FileNotFoundException{
+        String fullstring = null;
+        StringBuffer sb = new StringBuffer();
+        Scanner scanner = new Scanner(file);
+        while(scanner.hasNextLine()){
+            fullstring = scanner.nextLine();
+            sb.append(fullstring);
+        }
+        return sb.toString();
+    }
 
     public void errorPopup(String message){
         Stage window = new Stage();
@@ -103,7 +115,6 @@ public class ClientGui {
             }
         }
 
-        System.out.println(temp.length() + " . " + temp);
         return temp;
 
     }
@@ -125,6 +136,13 @@ public class ClientGui {
 
             Button btn_Rename = new Button("rename");
             Button btn_Delete = new Button("delete");
+            Button btn_Fav = new Button();
+
+            Image image_Star = new Image(new File("src/main/resources/star.png").toURI().toString());
+            ImageView view_Star = new ImageView(image_Star);
+            view_Star.setFitHeight(20);
+            view_Star.setFitWidth(20);
+
             name.setMaxWidth(Double.MAX_VALUE);
             item.setHgrow(name, Priority.ALWAYS);
 
@@ -132,6 +150,21 @@ public class ClientGui {
             item.setPadding(new Insets(8, 8, 8, 15));
             filelist.getChildren().add(item);
 
+            //check if files are marked as favorite
+            try {
+                String s = fileToString(new File("src/main/resources/Favorite_Files.txt"));
+                System.out.println(s);
+                if(s.contains(name.getText())){
+                    btn_Fav.setGraphic(view_Star);
+                }
+                else{
+                    btn_Fav.setGraphic(null);
+                }
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            //checkForFavoriteFiles(name.getText(), btn_Fav, view_Star);
 
             EventHandler<ActionEvent> rename = new EventHandler<>() {
                 @Override
@@ -148,6 +181,7 @@ public class ClientGui {
                     }
                 }
             };
+
             EventHandler<ActionEvent> delete = new EventHandler<>() {
                 @Override
                 public void handle(ActionEvent event) {
@@ -159,8 +193,38 @@ public class ClientGui {
                 }
             };
 
+            EventHandler<ActionEvent> markAsFav = new EventHandler<>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    String selectedFile = name.getText();
+                    String favFiles;
+                    File textFile = new File("src/main/resources/Favorite_Files.txt");
+
+                    try {
+                        favFiles = fileToString(textFile);
+                        PrintWriter writer = new PrintWriter(textFile);
+                        if(favFiles.contains(selectedFile)){
+                            favFiles = favFiles.replaceAll(selectedFile, "");
+
+                            writer.append(favFiles);
+                            writer.flush();
+                            btn_Fav.setGraphic(null);
+                        }
+                        else{
+                            favFiles = favFiles.concat(selectedFile);
+                            writer.append(favFiles);
+                            writer.flush();
+                            btn_Fav.setGraphic(view_Star);
+                        }
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
             btn_Delete.setOnAction(delete);
             btn_Rename.setOnAction(rename);
+            btn_Fav.setOnAction(markAsFav);
 
             if(isFile){
                 EventHandler<ActionEvent> download = new EventHandler<>() {
@@ -174,12 +238,13 @@ public class ClientGui {
                         }
                     }
                 };
-                Button btnDownload = new Button("download");
-                item.getChildren().addAll(name, btnDownload, btn_Rename, btn_Delete);
-                btnDownload.setOnAction(download);
+                Button btn_Download = new Button("download");
+                item.getChildren().addAll(name, btn_Download, btn_Rename, btn_Delete, btn_Fav);
+                btn_Download.setOnAction(download);
             }
             else{
                 name.setTextFill(Color.DARKBLUE);
+                name.setFont(Font.font("Verdana", FontWeight.BOLD, 10));
                 EventHandler<ActionEvent> enter = new EventHandler<>() {
                     @Override
                     public void handle(ActionEvent event) {
