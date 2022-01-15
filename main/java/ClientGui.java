@@ -170,7 +170,7 @@ public class ClientGui {
                         DirectoryChooser dirChooser = new DirectoryChooser();
                         File f = dirChooser.showDialog(null);
                         if(f != null){
-                            tcp_client.downloadFile(f.getPath(), path + name.getText());
+                            tcp_client.downloadFile(f.getPath() + name.getText(), path + name.getText());
                             createGUIElements(filelist);
                         }
                     }
@@ -335,10 +335,6 @@ public class ClientGui {
 
                     int i = localpath.lastIndexOf("/");
                     String remotePath = path + localpath.substring(i + 1);
-
-                    System.out.println(path);
-                    System.out.println(localpath);
-                    System.out.println(remotePath);
 
                     tcp_client.uploadFile(localpath, remotePath);
                     createGUIElements(filelist);
