@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -27,7 +28,7 @@ public class ClientGui {
     private Label currentPath;
 
     public ClientGui(String ip, int port) throws IOException{
-        tcp_client = new TCP_Client(ip, port);
+            tcp_client = new TCP_Client(ip, port);
     }
 
     public static String fileToString(File file) throws FileNotFoundException{
@@ -41,7 +42,7 @@ public class ClientGui {
         return sb.toString();
     }
 
-    public void errorPopup(String message){
+    public static void errorPopup(String message){
         Stage window = new Stage();
         window.centerOnScreen();
         window.setMinHeight(150);

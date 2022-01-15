@@ -61,16 +61,15 @@ public class Main extends Application{
         EventHandler<ActionEvent> connectToServer = new EventHandler<>() {
             @Override
             public void handle(ActionEvent event) {
-
-                String ip = ipAndPortTextfield.getText().split(":")[0];
-                int port = Integer.parseInt(ipAndPortTextfield.getText().split(":")[1]);
                 try{
+                    String ip = ipAndPortTextfield.getText().split(":")[0];
+                    int port = Integer.parseInt(ipAndPortTextfield.getText().split(":")[1]);
                     ClientGui clientGui = new ClientGui(ip, port);
                     clientGui.startFilesharing(primaryStage);
                 }
                 catch(Exception e){
                     e.printStackTrace();
-                    return;  //warning ?
+                    ClientGui.errorPopup("Connection could not be established");
                 }
             }
         };
