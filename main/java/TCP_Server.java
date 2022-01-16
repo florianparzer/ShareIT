@@ -77,16 +77,20 @@ public class TCP_Server {
         clientConnection.start();
     }
 
+    /**
+     * Removes a ClientConnection from the set of all connections
+     * @param clientConnection The ClientConnection that should be removed
+     */
     public void removeClient(ClientConnection clientConnection){
         connections.remove(clientConnection);
     }
 
+    /**
+     * Getter for the documentRoot
+     * @return a String containing the path of the documentRoot
+     */
     public String getDocumentRoot() {
         return documentRoot;
-    }
-
-    public String getTmpFolder() {
-        return tmpFolder;
     }
 
     /**
@@ -122,11 +126,18 @@ public class TCP_Server {
         }
     }
 
-
+    /**
+     * Closes the Server Socket
+     * @throws IOException
+     */
     public void close() throws IOException{
         localTcpServer.close();
     }
 
+    /**
+     * The main method for the Server application
+     * @param args
+     */
     public static void main(String[] args) {
         try {
             TCP_Server server = new TCP_Server("src/main/resources/configRoot/");

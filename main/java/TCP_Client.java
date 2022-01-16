@@ -8,12 +8,24 @@ public class TCP_Client {
     private Socket serverSocket;
     private int commandLen = 500;
 
+    /**
+     * Generates a new TCP_Client
+     * @param ip the IP of the Server to which the connection will be established as a String
+     * @param port the port of the Server to which the connection will be established as int
+     * @throws IOException when an error occurred when establishing the connection
+     */
     public TCP_Client(String ip, int port) throws IOException {
         this.serverSocket = new Socket(ip, port);
         System.out.println("Client: connected to " + serverSocket.getInetAddress());
         serverSocket.getOutputStream().write("0".getBytes(StandardCharsets.UTF_8));
     }
 
+    /**
+     * Renames or moves a File or Directory
+     * @param path the relative path of the File or Directory that should be renamed
+     * @param newPath the new relative path of the File or Directory
+     * @return 0 if it was successful and -1 if it failed
+     */
     public int rename(String path, String newPath){
         System.out.println(path);
         System.out.println(newPath);
@@ -38,6 +50,11 @@ public class TCP_Client {
         }
     }
 
+    /**
+     * Deletes a File or Directory
+     * @param path the relative path of the File or Directory that should be deleted
+     * @return 0 if it was successful and -1 if it failed
+     */
     public int delete(String path){
         try {
             //get the name of file from server,
@@ -173,6 +190,11 @@ public class TCP_Client {
         return result;
     }
 
+    /**
+     * Creates a new Directory
+     * @param path the relative path of the new directory
+     * @return 0 if it was successful -1 if the creation failed and -2 if the file already exists
+     */
     public int createDir(String path){
         try {
             OutputStream out = serverSocket.getOutputStream();

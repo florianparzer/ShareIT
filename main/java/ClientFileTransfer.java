@@ -11,6 +11,15 @@ public class ClientFileTransfer implements Runnable{
     private boolean isDownload;
     private int blockSize = 4096;
 
+    /**
+     * Generates a ClientFileTransfer object
+     * @param file the local file that should be uploaded or where the download should be saved
+     * @param remotePath the remote path where the file should be uploaded or from where it should be downloaded
+     * @param ip the IP of the Server to which will be connected
+     * @param port the port of the Server to which will be connected
+     * @param isDownload boolean if the FileTransfer is a download (true) or upload (false)
+     * @throws IOException when new Sockets could not be established
+     */
     public ClientFileTransfer(File file, String remotePath, String ip, int port, boolean isDownload) throws IOException {
         transferredBytes = 0;
         fileTransferThread = new Thread(this);
@@ -27,6 +36,9 @@ public class ClientFileTransfer implements Runnable{
     }
 
     @Override
+    /**
+     * The method of the thread which calls ether a download method or upload method
+     */
     public void run() {
         if(isDownload){
             downloadFile();
@@ -40,7 +52,9 @@ public class ClientFileTransfer implements Runnable{
         }
     }
 
-
+    /**
+     * This method opens a local file and writes the data coming from the tcp stream to it
+     */
     public void downloadFile(){
         try(
                 BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(localFile))
@@ -68,6 +82,9 @@ public class ClientFileTransfer implements Runnable{
         }
     }
 
+    /**
+     * This method opens a local File and writes the data in blocks out to the tcp stream
+     */
     public void uploadFile(){
         try(
                 BufferedInputStream in = new BufferedInputStream(new FileInputStream(localFile))
@@ -86,9 +103,5 @@ public class ClientFileTransfer implements Runnable{
         }catch (IOException e){
             e.printStackTrace();
         }
-    }
-
-    public int getTransferredBytes() {
-        return transferredBytes;
     }
 }

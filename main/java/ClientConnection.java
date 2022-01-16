@@ -13,6 +13,11 @@ public class ClientConnection implements Runnable{
     private String ack = "200";
     private String error = "500";
 
+    /**
+     * Creates a new ClientConnection
+     * @param clientSocket is the TCP Socket for the Client connection
+     * @param handler is the TCP Server that called the Method
+     */
     public ClientConnection(Socket clientSocket, TCP_Server handler) {
         this.clientSocket = clientSocket;
         this.handler = handler;
@@ -20,6 +25,9 @@ public class ClientConnection implements Runnable{
     }
 
     @Override
+    /**
+     * Is the CommandListener for the Client Connection, it reads the tcp for incoming commands and executes them
+     */
     public void run() {
         try {
             byte[] command = new byte[commandLen];
@@ -42,9 +50,9 @@ public class ClientConnection implements Runnable{
                 }else if(commandText.startsWith("rename")){
                     int result = rename(handler.getDocumentRoot() + commandText.split(" ")[1], handler.getDocumentRoot() + commandText.split(" ")[2]);
                     if(result == 0){
-                        out.write("200".getBytes(StandardCharsets.UTF_8));
+                        out.write(ack.getBytes(StandardCharsets.UTF_8));
                     }else{
-                        out.write("500".getBytes(StandardCharsets.UTF_8));
+                        out.write(error.getBytes(StandardCharsets.UTF_8));
                     }
                 }else if(commandText.startsWith("ls")){
                     //List Command
@@ -73,13 +81,18 @@ public class ClientConnection implements Runnable{
                     }
                     out.write(ack.getBytes(StandardCharsets.UTF_8));
                 }else if(commandText.startsWith("delete")){
-                    delete(handler.getDocumentRoot() + commandText.split(" ")[1]);
+                    int result =  delete(handler.getDocumentRoot() + commandText.split(" ")[1]);
+                    if(result == 0){
+                        out.write(ack.getBytes(StandardCharsets.UTF_8));
+                    }else {
+                        out.write(error.getBytes(StandardCharsets.UTF_8));
+                    }
                 }else if(commandText.startsWith("mkdir")){
                     int result = createDir(handler.getDocumentRoot() + commandText.split(" ")[1]);
                     if(result == 0){
-                        out.write("200".getBytes(StandardCharsets.UTF_8));
+                        out.write(ack.getBytes(StandardCharsets.UTF_8));
                     }else if(result == -1){
-                        out.write("500".getBytes(StandardCharsets.UTF_8));
+                        out.write(error.getBytes(StandardCharsets.UTF_8));
                     }else {
                         out.write("501".getBytes(StandardCharsets.UTF_8));
                     }
@@ -227,6 +240,12 @@ public class ClientConnection implements Runnable{
         return result.substring(0, result.length()-1)+";";
     }
 
+    /**
+     * Renames a file
+     * @param path the File which should be renamed
+     * @param newPath the new Name of the File
+     * @return 0 if rename was successfull and -1 if not
+     */
     public int rename(String path, String newPath){
         File file = new File(path);
         File file2 = new File(newPath);
@@ -250,41 +269,38 @@ public class ClientConnection implements Runnable{
         return -1;
     }
 
+    /**
+     * Deletes a file
+     * @param path the path of the file as String
+     * @return 0 if deletion was successful and -1 if it failed
+     */
     public int delete(String path){
         try{
             File f = new File(path);
             boolean hasWorked = false;
 
-            try{
-                if(f.isDirectory()){
-                    hasWorked = deleteDir(f);
-                }else{
-                    hasWorked = f.delete();
-                }
-                if(hasWorked){
-                    clientSocket.getOutputStream().write("200".getBytes(StandardCharsets.UTF_8));
-                    return 0;
-                }else {
-                    clientSocket.getOutputStream().write("500".getBytes(StandardCharsets.UTF_8));
-                    return -1;
-                }
+            if(f.isDirectory()){
+                hasWorked = deleteDir(f);
+            }else{
+                hasWorked = f.delete();
             }
-            catch (IOException e){
-                e.printStackTrace();
+            if(hasWorked){
+                return 0;
+            }else {
+                return -1;
             }
 
         }catch (Exception e){
-            try{
-                clientSocket.getOutputStream().write("500".getBytes(StandardCharsets.UTF_8));
-            }
-            catch (IOException fail){
-                fail.printStackTrace();
-                return -1;
-            }
+            e.printStackTrace();
+            return -1;
         }
-        return 0;
     }
 
+    /**
+     * Deletes a Directory by recursively calling the method for subdirectories
+     * @param folder the folder which should be deleted as File
+     * @return true if it was successful and false if it failed
+     */
     public static boolean deleteDir(File folder) {
         File[] files = folder.listFiles();
         if(files!=null) {
@@ -314,8 +330,11 @@ public class ClientConnection implements Runnable{
         }
         return 0;
     }
-    
+
     @Override
+    /**
+     * Tests if this Object is equals with o
+     */
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -324,6 +343,9 @@ public class ClientConnection implements Runnable{
     }
 
     @Override
+    /**
+     * Generates a hashcode of the ClientConnection
+     */
     public int hashCode() {
         return Objects.hash(clientSocket, handler);
     }

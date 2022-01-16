@@ -10,6 +10,13 @@ public class ServerFileTransfer implements Runnable{
     private boolean isDownload;
     private int blockSize = 4096;
 
+    /**
+     * Generates a ne ServerFileTransfer
+     * @param isDownload boolean if the FileTransfer is an download (true) or upload (false)
+     * @param server the Socket for the FileTransfer
+     * @param localPath the path of the file under which the upload should be saved or the file which should be downloaded
+     * @param tmp the path of the tmp directory, where uploads are stored temporarily while uploading
+     */
     public ServerFileTransfer(boolean isDownload, Socket server, String localPath, String tmp) {
         this.isDownload = isDownload;
         clientSocket = server;
@@ -20,6 +27,9 @@ public class ServerFileTransfer implements Runnable{
     }
 
     @Override
+    /**
+     * The method of the thread which calls ether a download method or upload method
+     */
     public void run() {
         if(isDownload){
             downloadFile();
@@ -33,6 +43,9 @@ public class ServerFileTransfer implements Runnable{
         }
     }
 
+    /**
+     * This method opens a local File and writes the data in blocks out to the tcp stream
+     */
     public void downloadFile(){
         try(
                 BufferedInputStream in = new BufferedInputStream(new FileInputStream(tmpPath))
@@ -55,6 +68,9 @@ public class ServerFileTransfer implements Runnable{
         }
     }
 
+    /**
+     * This method opens a local file and writes the data coming from the tcp stream to it
+     */
     public void uploadFile(){
         try(
                 BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(localPath))
