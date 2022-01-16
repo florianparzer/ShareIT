@@ -62,7 +62,7 @@ public class ClientGui {
         window.setMinHeight(150);
         window.setMinWidth(250);
 
-        window.initModality(Modality.APPLICATION_MODAL); // Block other windows, until this one finished
+        window.initModality(Modality.APPLICATION_MODAL);
         window.setTitle("Error");
 
         Label errorMessage = new Label(message);
@@ -96,7 +96,7 @@ public class ClientGui {
         window.setMinHeight(150);
         window.setMinWidth(250);
 
-        window.initModality(Modality.APPLICATION_MODAL); // Block other windows, until this one finished
+        window.initModality(Modality.APPLICATION_MODAL); 
         TextField newName = new TextField();
         Button btnConfirm = new Button("OK");
         btnConfirm.setOnAction(event -> window.close());
@@ -195,7 +195,6 @@ public class ClientGui {
                     String newName = renamePopUp(false);
                     if(newName != null){
                         if(tcp_client.rename(path + name.getText(), newName) == 0) {
-                            //für verschieben ändern auf: tcp_client.rename(path + name.getText(), newName);
                             createGUIElements(filelist);
                         }else {
                             errorPopup("Could not rename file");
@@ -311,7 +310,7 @@ public class ClientGui {
 
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setContent(filelist);
-        scrollPane.setPannable(true); // it means that the user should be able to pan the viewport by using the mouse.
+        scrollPane.setPannable(true);
 
         TextField uploadFrom = new TextField();
 
@@ -450,7 +449,7 @@ public class ClientGui {
             @Override
             public void handle(DragEvent event) {
                 if(event.getDragboard().hasFiles()){
-                    event.acceptTransferModes(TransferMode.ANY); // + symbol, -> for accepting the data
+                    event.acceptTransferModes(TransferMode.ANY);
                 }
                 event.consume();
             }
