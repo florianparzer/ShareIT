@@ -48,24 +48,24 @@ Das Projekt wurde mithilfe von mehreren Klassen, und mehreren Threads, die mitei
     * ClientConnection
     * ServerFileTransfer
 
-###Client Klassen
+### Client Klassen
 
-####ClientGui
+#### ClientGui
 Die ClientGui ist wie der Name schon aussagt die GUI des Clients. Hier werden die Fenster erstellt, die Daten die auf dem Server sind dargestellt und die EventHandler definiert. Sie beinhaltet als Attribut ein Objekt der Klasse TCP_Client, dessen Methoden die GUI mit dem Server verbindet.
 
-####TCP_Client
+#### TCP_Client
 Der TCP_Client ist das Interface zwischen dem Frontend und dem Backend. Ein Objekt der Klasse TCP_Client erstellt und beinhaltet den TCP-Socket zum Server, somit geht jegliche Kommunikation zum Server über dieses Objekt. Für die verschiedenen Funktionen, wie "File löschen", "File umbenennen" etc, bietet die Klasse eine Methode, die dann von der GUI aufgerufen werden kann. Die Methoden liefern dann einen Return-Value zurück, welcher Auskunft über das Ergebnis der Methode gibt.
 
-####ClientFileTransfer
+#### ClientFileTransfer
 Der ClientFileTransfer hat lediglich eine Funktion, nämlich das senden bzw. empfangen der Daten aus den Files zum bzw. vom Server. Dazu wird ein eigener Thread genutzt welcher abhängig von den Attributen einen Download bzw. Upload startet.
 
-###Server Klassen
+### Server Klassen
 
-####TCP_Server
+#### TCP_Server
 Diese Klasse ist der Startpunkt für den Server, da sie die Main-Methode beinhaltet. Beim Erstellen des Objekts wird ein Config-File ausgelesen, aus dem Informationen wie documentRoot und localer TCP-Port ausgelesen werden. Danach ist die einzige Aufgabe des Objekts nach neuen TCP-Connections zu achten und neue ClientConnection zu erstellen
 
-####ClientConnection
+#### ClientConnection
 Die ClientConnection ist das Gegenstück zum TCP_Client, da die Objekte die TCP-Sockets für zu den Clients beinhalten. Die Hauptaufgabe der Objekte dieser Klasse ist es ankommende Commands vom TCP_Client zu empfangen und entsprechende Methoden zu starten. Nachdem die Methode ausgeführt wurde, wird noch zum TCP_Client ein Abschlusscode gesendet.
 
-####ServerFileTransfer
+#### ServerFileTransfer
 Der ServerFileTransfer ist das Gegenstück zum ClientFileTransfer und ist somit für den FileTransfer vom und zum Client verantwortlich und ließt bzw. speichert die Daten von/in die Dateien
