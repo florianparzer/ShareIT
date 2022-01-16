@@ -38,17 +38,15 @@ Unser Projekt (Share_IT) leistet die Funktionalität eines Filesharing Servers. 
 
 Das Projekt wurde mithilfe von mehreren Klassen, und mehreren Threads, die miteinander arbeiten. Diese Klassen sind auf der Client-Seite die ClientGui, der TCP_Client und die Klasse ClientFileTransfer. Weiters wird am Client noch eine Main ausgeführt welche nur das Connection-Fenster erstellt und dann ein ClientGui-Objekt initialisiert und diesen startet. Auf der Server-Seite sind die Klassen TCP_Server, ClientConnection und ServerFileTransfer vorhanden.
 
-* Client-Klassen
-    * Main
-    * ClientGui
-    * TCP_Client
-    * ClientFileTransfer
-* Server-Klassen
-    * TCP_Server
-    * ClientConnection
-    * ServerFileTransfer
-
 ### Client Klassen
+
+* Main
+* ClientGui
+* TCP_Client
+* ClientFileTransfer
+
+#### Main
+
 
 #### ClientGui
 Die ClientGui ist wie der Name schon aussagt die GUI des Clients. Hier werden die Fenster erstellt, die Daten die auf dem Server sind dargestellt und die EventHandler definiert. Sie beinhaltet als Attribut ein Objekt der Klasse TCP_Client, dessen Methoden die GUI mit dem Server verbindet.
@@ -61,6 +59,10 @@ Der ClientFileTransfer hat lediglich eine Funktion, nämlich das senden bzw. emp
 
 ### Server Klassen
 
+* TCP_Server
+* ClientConnection
+* ServerFileTransfer
+
 #### TCP_Server
 Diese Klasse ist der Startpunkt für den Server, da sie die Main-Methode beinhaltet. Beim Erstellen des Objekts wird ein Config-File ausgelesen, aus dem Informationen wie documentRoot und localer TCP-Port ausgelesen werden. Danach ist die einzige Aufgabe des Objekts nach neuen TCP-Connections zu achten und neue ClientConnection zu erstellen
 
@@ -69,3 +71,9 @@ Die ClientConnection ist das Gegenstück zum TCP_Client, da die Objekte die TCP-
 
 #### ServerFileTransfer
 Der ServerFileTransfer ist das Gegenstück zum ClientFileTransfer und ist somit für den FileTransfer vom und zum Client verantwortlich und ließt bzw. speichert die Daten von/in die Dateien
+
+## Inbetriebnahme
+
+Für die Inbetriebnahme müssen die entsprechenden Klassen am Client bzw. am Server sein. Beim Client muss ein File im Projektverzeichnis mit dem Pfad "src/main/resources/Favorite_Files.txt" vorhanden sein. Beim Server muss ein File "server.conf" im Ordner " im ConfigRoot "src/main/resources/configRoot/" vorhanden sein. Der das ConfigRoot wird beim Initalisieren des TCP_Servers in der Main angegeben, kann also im Sourcecode geändert werden.
+
+![Alt text](/serverConf.PNG?raw=true "Beispiel server.conf")
