@@ -118,7 +118,6 @@ public class ClientGui {
         }
 
         return temp;
-
     }
 
     public void createGUIElements(VBox filelist){
@@ -139,11 +138,12 @@ public class ClientGui {
             Button btn_Rename = new Button("rename");
             Button btn_Delete = new Button("delete");
             Button btn_Fav = new Button();
+            btn_Fav.setPrefWidth(33);
 
             Image image_Star = new Image(new File("src/main/resources/star.png").toURI().toString());
             ImageView view_Star = new ImageView(image_Star);
-            view_Star.setFitHeight(20);
-            view_Star.setFitWidth(20);
+            view_Star.setFitHeight(15);
+            view_Star.setFitWidth(15);
 
             name.setMaxWidth(Double.MAX_VALUE);
             item.setHgrow(name, Priority.ALWAYS);
@@ -247,9 +247,14 @@ public class ClientGui {
                 EventHandler<ActionEvent> enter = new EventHandler<>() {
                     @Override
                     public void handle(ActionEvent event) {
-                        path = path + name.getText() + "/";
-                        currentPath.setText(path);
-                        createGUIElements(filelist);
+                        try{
+                            path = path + name.getText() + "/";
+                            currentPath.setText(path);
+                            createGUIElements(filelist);
+
+                        }catch(ArrayIndexOutOfBoundsException e){
+
+                        }
                     }
                 };
                 Button btn_Enter = new Button("enter");
@@ -378,15 +383,15 @@ public class ClientGui {
             @Override
             public void handle(ActionEvent event) {
                 String foldername = renamePopUp(true);
-
-                int result = tcp_client.createDir(path+foldername);
-                if(result == -1){
-                    errorPopup("Internal Error occurred");
-                }else if(result == -2){
-                    errorPopup("Already exists");
+                if(foldername != null){
+                    int result = tcp_client.createDir(path+foldername);
+                    if(result == -1){
+                        errorPopup("Internal Error occurred");
+                    }else if(result == -2){
+                        errorPopup("Already exists");
+                    }
+                    createGUIElements(filelist);
                 }
-
-                createGUIElements(filelist);
             }
         };
 
