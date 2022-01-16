@@ -25,7 +25,7 @@ public class Main extends Application{
         primaryStage.setMinHeight(300);
         primaryStage.setMinWidth(300);
 
-        Image image = new Image(new File("src/main/logo.png").toURI().toString());
+        Image image = new Image(new File("src/main/resources/logo.png").toURI().toString());
         ImageView logoview = new ImageView(image);
 
         TextField ipAndPortTextfield = new TextField();
@@ -36,8 +36,8 @@ public class Main extends Application{
 
         logoview.setX(50);
         logoview.setY(25);
-        logoview.setFitHeight(100);
-        logoview.setFitWidth(100);
+        logoview.setFitHeight(200);
+        logoview.setFitWidth(200);
         logoview.setPreserveRatio(true);
 
         VBox vbox = new VBox();
