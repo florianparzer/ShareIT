@@ -15,6 +15,8 @@ public class TCP_Client {
     }
 
     public int rename(String path, String newPath){
+        System.out.println(path);
+        System.out.println(newPath);
         try {
             //get the name of file from server,
             String s = "rename " + path + " " + newPath;

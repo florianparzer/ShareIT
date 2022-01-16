@@ -40,7 +40,12 @@ public class ClientConnection implements Runnable{
                     //Download Command
                     downloadFile(handler.getDocumentRoot() + commandText.split(" ")[1]);
                 }else if(commandText.startsWith("rename")){
-                    rename(handler.getDocumentRoot() + commandText.split(" ")[1], handler.getDocumentRoot() + commandText.split(" ")[2]);
+                    int result = rename(handler.getDocumentRoot() + commandText.split(" ")[1], handler.getDocumentRoot() + commandText.split(" ")[2]);
+                    if(result == 0){
+                        out.write("200".getBytes(StandardCharsets.UTF_8));
+                    }else{
+                        out.write("500".getBytes(StandardCharsets.UTF_8));
+                    }
                 }else if(commandText.startsWith("ls")){
                     //List Command
                     try {
@@ -226,8 +231,9 @@ public class ClientConnection implements Runnable{
         File file = new File(path);
         File file2 = new File(newPath);
 
-        if (file2.exists())
+        if (file2.exists()) {
             return 1;
+        }
 
         boolean success = file.renameTo(file2);
         try{
