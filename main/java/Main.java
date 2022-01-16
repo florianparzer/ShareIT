@@ -17,7 +17,10 @@ import java.io.File;
 
 public class Main extends Application{
 
-
+    /**
+     * Starts log in interface for the user.
+     * @param primaryStage the Stage to visualize
+     */
     @Override
     public void start(Stage primaryStage){
         primaryStage.setTitle("Share_IT");
