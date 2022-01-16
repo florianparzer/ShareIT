@@ -18,8 +18,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.UnknownHostException;
-import java.util.List;
 import java.util.Scanner;
 
 public class ClientGui {
@@ -277,8 +275,8 @@ public class ClientGui {
                             currentPath.setText(path);
                             createGUIElements(filelist);
 
-                        }catch(ArrayIndexOutOfBoundsException e){
-
+                        }catch(Exception e){
+                            e.printStackTrace();
                         }
                     }
                 };
