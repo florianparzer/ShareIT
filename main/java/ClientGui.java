@@ -27,10 +27,22 @@ public class ClientGui {
     private String path = "/";
     private Label currentPath;
 
+    /**
+     * Constructer of the GUI
+     * @param ip takes in IP to construct a TCP_Client
+     * @param port takes in port to construct a TCP_Client
+     * @throws IOException
+     */
     public ClientGui(String ip, int port) throws IOException{
             tcp_client = new TCP_Client(ip, port);
     }
 
+    /**
+     * Converts a file into a string
+     * @param file the file to convert
+     * @return it returns a String with the complete content of the file
+     * @throws FileNotFoundException
+     */
     public static String fileToString(File file) throws FileNotFoundException{
         String fullstring = null;
         StringBuffer sb = new StringBuffer();
@@ -42,6 +54,10 @@ public class ClientGui {
         return sb.toString();
     }
 
+    /**
+     * If a restricted behaviour shows up, an error window with a message pops up
+     * @param message the error message of the pop up window
+     */
     public static void errorPopup(String message){
         Stage window = new Stage();
         window.centerOnScreen();
@@ -71,6 +87,11 @@ public class ClientGui {
 
     }
 
+    /**
+     * Takes in a new name from the user for the rename or create folder operation
+     * @param addfolder if a new folder should be created, then this flag has to be true
+     * @return String with the selected name from the user
+     */
     public String renamePopUp(boolean addfolder){
         Stage window = new Stage();
         window.centerOnScreen();
@@ -120,6 +141,10 @@ public class ClientGui {
         return temp;
     }
 
+    /**
+     * Lists all elements on the server in a folder structure with buttons
+     * @param filelist the VBox to add the elements to
+     */
     public void createGUIElements(VBox filelist){
         filelist.getChildren().clear();
         String input = tcp_client.listContent(path);
@@ -266,6 +291,10 @@ public class ClientGui {
 
     }
 
+    /**
+     * Starts the file sharing GUI, after successful log in
+     * @param primaryStage the stage to show
+     */
     public void startFilesharing(Stage primaryStage){
         primaryStage.setTitle("Share_IT");
         primaryStage.centerOnScreen();
