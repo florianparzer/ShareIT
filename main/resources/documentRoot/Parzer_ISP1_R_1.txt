@@ -1,0 +1,104 @@
+!10.78.2.22
+en
+conf t
+ho ISP1_R_1
+no ip domain-lookup
+service password-encryption
+banner motd ~No Access~
+
+username cisco password ciscocisco
+username cisco priv 15
+
+ip domain-name 5CN.com
+crypto key generate rsa
+
+line con 0
+login local
+exec-timeout 10 0
+loggin syn
+
+line vty 0 15
+login local
+exec-timeout 10 0
+loggin syn
+transport input ssh
+exit
+
+int lo0
+ip add 10.1.0.1 255.255.255.0
+exit
+
+int se0/2/0
+description to_ISP1_R_9
+ip add 192.168.0.1 255.255.255.0
+no shut
+exit
+
+!EIGRP
+router eigrp 1 
+no auto-summary
+network 192.168.0.0 0.0.0.255
+exit
+
+crypto isakmp policy 10
+hash md5
+authentication pre-share
+exit
+crypto isakmp key cisco123 address 0.0.0.0 0.0.0.0
+crypto ipsec transform-set strong esp-3des esp-md5-hmac
+exit
+crypto ipsec profile cisco
+set security-association lifetime seconds 120
+set transform-set strong
+exit
+
+!DMVPN
+interface Tunnel0
+ip address 172.16.0.1 255.255.255.0
+no ip redirects
+ip mtu 1440
+ip nhrp authentication cisco123
+ip nhrp map 172.16.0.5 192.168.16.1
+ip nhrp network-id 1
+ip nhrp nhs 172.16.0.5
+tunnel source se0/2/0
+ip ospf network point-to-multipoint
+tunnel mode gre multipoint
+tunnel key 0
+tunnel protection ipsec profile cisco
+
+router ospf 1
+router-id 1.1.1.1
+network 172.16.0.1 0.255.255.255 area 1
+network 10.1.0.0 0.0.0.255 area 1
+exit
+
+
+
+!BGP
+router bgp 1
+neighbor 10.2.0.1 remote 1
+neighbor 10.2.0.1 update-source lo0
+neighbor 10.3.0.1 remote 1
+neighbor 10.3.0.1 update-source lo0
+neighbor 10.4.0.1 remote 1
+neighbor 10.4.0.1 update-source lo0
+neighbor 10.5.0.1 remote 1
+neighbor 10.5.0.1 update-source lo0
+neighbor 10.6.0.1 remote 1
+neighbor 10.6.0.1 update-source lo0
+no synchronization
+exit
+
+
+#hsrp to CusISP2
+interface FastEthernet0/0
+desc to_Customer12
+ip address 172.12.1.2 255.255.255.0
+standby 1 ip 172.12.1.1
+standby 1 priority 90
+no shut
+
+
+end
+ex

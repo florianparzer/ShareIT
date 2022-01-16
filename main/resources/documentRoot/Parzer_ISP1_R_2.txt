@@ -1,0 +1,106 @@
+en
+conf t
+ho ISP1_R_2
+no ip domain-lookup
+service password-encryption
+banner motd cUnauthorized Access prohibitedc
+
+username cisco password ciscocisco
+username cisco priv 15
+ip domain-name 5CN.com
+crypto key generate rsa
+1024
+
+line con 0
+login local
+exec-timeout 10 0
+loggin syn
+
+line vty 0 15
+login local
+exec-timeout 10 0
+loggin syn
+transport input ssh
+exit
+
+crypto isakmp policy 10
+hash md5
+authentication pre-share
+
+crypto isakmp key cisco123 address 0.0.0.0 0.0.0.0
+
+crypto ipsec transform-set strong esp-3des esp-md5-hmac 
+
+crypto ipsec profile cisco
+set security-association lifetime seconds 120
+set transform-set strong 
+
+int ser0/2/0
+description to_ISP1_R_10
+ip add 192.168.1.1 255.255.255.0
+no shut
+exit
+
+router eigrp 1 
+no auto-summary
+network 192.168.1.0 0.0.0.255
+exit
+
+
+int lo0
+ip addr 10.2.0.1 255.255.255.0
+exit
+
+interface Tunnel0
+ip address 172.16.0.4 255.255.255.0
+no ip redirects
+ip mtu 1440
+ip nhrp authentication cisco123
+ip nhrp map 172.16.0.5 192.168.16.1
+ip nhrp map multicast 172.16.0.5
+ip nhrp network-id 1
+ip nhrp nhs 172.16.0.5
+tunnel source 192.168.1.1
+tunnel mode gre multipoint
+
+ip ospf network point-to-multipoint
+tunnel key 0
+tunnel protection ipsec profile cisco
+
+router ospf 1
+network 10.2.0.0 0.0.0.255 area 1
+network 172.16.0.0 0.0.0.255 area 1
+
+router bgp 1
+neighbor 10.1.0.1 remote 1
+neighbor 10.1.0.1 update-source lo0
+neighbor 10.3.0.1 remote 1
+neighbor 10.3.0.1 update-source lo0
+neighbor 10.4.0.1 remote 1
+neighbor 10.4.0.1 update-source lo0
+neighbor 10.5.0.1 remote 1
+neighbor 10.5.0.1 update-source lo0
+neighbor 10.6.0.1 remote 1
+neighbor 10.6.0.1 update-source lo0
+no synchronization
+exit
+
+#HSRP (ISP4)
+interface FastEthernet0/0
+desc to_Customer14
+ip address 172.14.1.3 255.255.255.0
+standby 1 ip 172.14.1.1
+standby 1 preempt
+standby 1 priority 110
+exit
+
+ip sla 1
+icmp-echo  100.100.100.1 source-interface tunnel0
+ip sla schedule 1 life forever start-time now
+
+track 1 ip sla 1 reachability
+exit
+
+interface FastEthernet0/0
+standby 1 track 1 decrement 100
+no shut

@@ -1,0 +1,93 @@
+en
+conf t
+ho ISP1_R_8
+no ip domain-lookup
+service password-encryption
+banner motd ~No Access~
+
+username cisco password ciscocisco
+username cisco priv 15
+
+ip domain-name 5CN.com
+crypto key generate rsa
+
+line con 0
+login local
+exec-timeout 10 0
+
+loggin syn
+
+!je nach anzahl der lines
+
+line vty 0 15
+login local
+exec-timeout 10 0
+loggin syn
+transport input ssh
+exit
+
+vlan 7
+vlan 14
+vlan 10
+vlan 12
+exit
+
+int fa0/2/0
+description to_ISP1_R_11
+sw m a
+sw a v 7
+
+int fa0/2/1
+description to_ISP1_R_12
+sw m a
+sw a v 10
+	
+int fa0/2/2
+description to_ISP1_R_13
+sw m a
+sw a v 12
+
+int fa0/2/3
+description to_ISP1_R_7
+sw m a
+sw a v 14
+
+int fa0/0
+description to_ISP1_R_9
+ip add 192.168.3.1 255.255.255.0
+no shut
+
+int fa0/1
+description to_ISP1_R_10
+ip add 192.168.5.1 255.255.255.0
+no shut
+
+int vlan 7
+description to_ISP1_R_11
+ip add 192.168.7.1 255.255.255.0
+no shut
+
+int vlan 10
+description to_ISP1_R_12
+ip add 192.168.10.1 255.255.255.0
+no shut
+	
+int vlan 12
+description to_ISP1_R_13
+ip add 192.168.12.1 255.255.255.0
+no shut
+
+int vlan 14
+description to_ISP1_R_7
+ip add 192.168.14.1 255.255.255.0
+no shut
+
+
+router eigrp 1 
+no auto-summary
+network 192.168.3.0 0.0.0.255
+network 192.168.5.0 0.0.0.255
+network 192.168.7.0 0.0.0.255
+network 192.168.10.0 0.0.0.255
+network 192.168.12.0 0.0.0.255
+network 192.168.14.0 0.0.0.255

@@ -460,12 +460,15 @@ public class ClientGui {
             public void handle(DragEvent event) {
                 String file = event.getDragboard().getUrl();
                 file = file.substring(file.indexOf("/") + 1);
-                if(!file.contains(" ")){
+                String name =  file.substring(file.lastIndexOf("/") + 1);
+                if(!name.contains(" ")){
                     int i = file.lastIndexOf("/");
-                    String remotePath = path + file.substring(i + 1);
+                    String remotePath = path + name;
                     tcp_client.uploadFile(file, remotePath);
                     createGUIElements(filelist);
                     event.consume();
+                }else{
+                    errorPopup("No space allowed!");
                 }
             }
         });
