@@ -1,7 +1,7 @@
 # Filesharing Server
 
-- Abdou Arsani (ic20b098@technikum-wien.at)
-- Parzer Florian (ic20b081@technikum-wien.at)
+- Abdou Arsani
+- Parzer Florian
 
 ## Must-Have Features
 
